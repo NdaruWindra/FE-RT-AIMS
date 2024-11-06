@@ -10,7 +10,7 @@ const initialState: IUserState = {
   email: '',
   password: '',
   role: '',
-  refresh_token: '',
+  accessToken: '',
   id_history: '',
   isLoading: false,
 }

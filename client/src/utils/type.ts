@@ -7,7 +7,7 @@ export interface IUserState {
   email: string
   password: string
   role: string
-  refresh_token?: string
+  accessToken?: string
   id_history?: string
   isLoading: boolean
 }

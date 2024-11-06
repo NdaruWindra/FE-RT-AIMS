@@ -2,13 +2,15 @@ import { customFecth } from '@/utils/axios'
 
 export async function signupThunk(data: any, thunkAPI: any) {
   try {
-    const response = await customFecth.post('/users/sign-up', {
+    const response = await customFecth.post('/user/sign-up', {
       username: data.name,
       email: data.email,
       password: data.password,
       role: 'users', // soon dihapus
     })
-    console.log(response)
+
+    console.log(response.data)
+    return response.data
   } catch (error: any) {
     console.log(error)
 
@@ -18,11 +20,14 @@ export async function signupThunk(data: any, thunkAPI: any) {
 
 export async function signinThunk(data: any, thunkAPI: any) {
   try {
-    const response = await customFecth.post('/users/sign-in', {
+    const response = await customFecth.post('/user/sign-in', {
       email: data.email,
       password: data.password,
     })
-    console.log(response)
+
+    console.log(response.data)
+
+    return response.data
   } catch (error: any) {
     console.log(error)
 
