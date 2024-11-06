@@ -5,7 +5,7 @@ import Banner from './components/banner'
 export default function SignUp() {
   return (
     <>
-      <div className='container grid lg:grid-cols-2'>
+      <div className='container grid md:grid-cols-2'>
         {/* Header */}
         <div className='mx-auto flex flex-col justify-center space-y-4'>
           <div className='mt-5 flex justify-center '>

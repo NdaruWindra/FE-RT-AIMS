@@ -42,6 +42,9 @@ module.exports = {
         colorPrimary: {
           DEFAULT:"hsl(var(--color-primary))"
         },
+        colorSecondary: {
+          DEFAULT :"hsl(var(--color-secondary))"
+        },
         textPrimary: {
           DEFAULT:"hsl(var(--text-primary))"
         },

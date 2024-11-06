@@ -5,7 +5,7 @@ import { imageIL } from '@/components/assets/images'
 export default function SignIn() {
   return (
     <>
-      <div className='container grid lg:grid-cols-2'>
+      <div className='container grid md:grid-cols-2'>
         {/* Banner */}
         <Banner />
 
