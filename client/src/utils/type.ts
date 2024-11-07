@@ -36,18 +36,8 @@ export interface ISideBarLink {
   icon: IconType
 }
 
-// <li>
-// <NavLink
-//   to='/dashboard/history'
-//   className={({ isActive }) =>
-//     `group flex items-center rounded-lg p-2 ${
-//       isActive
-//         ? 'bg-colorPrimary text-white'
-//         : 'text-textPrimary hover:bg-colorPrimary dark:text-primary'
-//     }`
-//   }
-// >
-//   <MdHistory />
-//   <span className='ms-3 flex-1 whitespace-nowrap'>History</span>
-// </NavLink>
-// </li>
+export interface IDataFormSettingSelect {
+  label: string
+  placeholder: string
+  selectItem: string[]
+}
