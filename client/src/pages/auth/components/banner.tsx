@@ -3,7 +3,7 @@ import { imagebanner } from '@/components/assets/images'
 
 function banner() {
   return (
-    <div className='relative hidden w-fit flex-col lg:block'>
+    <div className='relative hidden w-fit flex-col lg:block '>
       <Button className='absolute mt-2 h-24 w-80 rounded-full border-4 border-colorPrimary'>
         Try now for free!
       </Button>

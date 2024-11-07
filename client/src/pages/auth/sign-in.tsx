@@ -5,13 +5,13 @@ import { imageIL } from '@/components/assets/images'
 export default function SignIn() {
   return (
     <>
-      <div className='container h-full flex bg-red-500'>
+      <div className='container flex justify-between md:gap-10'>
         {/* Banner */}
         <Banner />
 
         {/* Header */}
         <div className='mx-auto flex flex-col justify-center space-y-4'>
-          <div className='flex justify-center '>
+          <div className='mt-8 flex justify-center '>
             <div className='h-20 w-52 overflow-hidden rounded-full'>
               <img src={imageIL} alt='imageIL' className='-mt-10 w-full' />
             </div>
