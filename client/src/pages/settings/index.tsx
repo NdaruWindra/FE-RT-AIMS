@@ -1,83 +1,92 @@
-import { Outlet } from 'react-router-dom'
-import {
-  IconBrowserCheck,
-  IconExclamationCircle,
-  IconNotification,
-  IconPalette,
-  IconTool,
-  IconUser,
-} from '@tabler/icons-react'
+import { Button } from '@/components/custom/button'
 import { Layout } from '@/components/custom/layout'
-import { Search } from '@/components/search'
-import { Separator } from '@/components/ui/separator'
-import ThemeSwitch from '@/components/theme-switch'
-import { UserNav } from '@/components/user-nav'
-import SidebarNav from './components/sidebar-nav'
+import { Form } from '@/components/ui/form'
+import { useForm } from 'react-hook-form'
+import { IoPersonCircle } from 'react-icons/io5'
+import { MdEmail } from 'react-icons/md'
+import { FormSettings } from './components/form-settings'
+import {
+  dataFormSettingsSelectLeft,
+  dataFormSettingsSelectRight,
+} from '@/utils/constant'
 
 export default function Settings() {
+  const form = useForm()
   return (
-    <Layout fixed>
-      {/* ===== Top Heading ===== */}
-      <Layout.Header>
-        <Search />
-        <div className='ml-auto flex items-center space-x-4'>
-          <ThemeSwitch />
-          <UserNav />
-        </div>
-      </Layout.Header>
-
-      <Layout.Body className='flex flex-col'>
-        <div className='space-y-0.5'>
+    <Layout fixed className='w-full overflow-y-auto'>
+      <Layout.Body className='flex flex-col space-y-10'>
+        {/* Header */}
+        <section className='space-y-0.5'>
           <h1 className='text-2xl font-bold tracking-tight md:text-3xl'>
             Settings
           </h1>
           <p className='text-muted-foreground'>
             Manage your account settings and set e-mail preferences.
           </p>
-        </div>
-        <Separator className='my-4 lg:my-6' />
-        <div className='flex flex-1 flex-col space-y-8 md:space-y-2 md:overflow-hidden lg:flex-row lg:space-x-12 lg:space-y-0'>
-          <aside className='top-0 lg:sticky lg:w-1/5'>
-            <SidebarNav items={sidebarNavItems} />
-          </aside>
-          <div className='flex w-full p-1 pr-4 md:overflow-y-hidden'>
-            <Outlet />
+        </section>
+
+        {/* Profile */}
+        <section>
+          <div className='items-center justify-between space-y-2 lg:flex lg:space-y-0 '>
+            <div className='flex items-center space-x-4'>
+              <IoPersonCircle className='h-16 w-16' />
+              <div>
+                <p className='font-medium dark:text-primary'>Marco</p>
+                <p className='text-muted-foreground'>marcoganteng@gmail.com</p>
+              </div>
+            </div>
+            <div className='space-x-2'>
+              <Button className='w-28 bg-colorPrimary text-primary hover:text-textPrimary '>
+                Change Picture
+              </Button>
+              <Button className='w-28 bg-primary text-red-500'>
+                Remove Picture
+              </Button>
+            </div>
           </div>
-        </div>
+          <div></div>
+        </section>
+
+        {/* Form */}
+        <section className='5 grid grid-cols-2 gap-4'>
+          <Form {...form}>
+            <FormSettings
+              data={dataFormSettingsSelectLeft}
+              name='settings'
+              label='Fullname'
+              placeholder='Your Fullname'
+            />
+            <FormSettings
+              data={dataFormSettingsSelectRight}
+              name='settings'
+              label='Nickname'
+              placeholder='Your Nickname'
+            />
+          </Form>
+          <Button className='w-28 bg-colorPrimary text-primary hover:text-textPrimary '>
+            Confirm
+          </Button>
+        </section>
+
+        {/* Email */}
+        <section>
+          <h2 className='light:text-textPrimary mb-2 font-bold'>
+            My email Address
+          </h2>
+          <div className='flex items-center space-x-3'>
+            <MdEmail
+              fill='#8A3DFF'
+              className='h-8 w-8 rounded-full p-1 dark:bg-muted-foreground'
+            />
+            <div>
+              <p className='text-sm dark:text-primary'>
+                marcoganteng@gmail.com
+              </p>
+              <p className='text-sm text-muted-foreground'>1 month ago</p>
+            </div>
+          </div>
+        </section>
       </Layout.Body>
     </Layout>
   )
 }
-
-const sidebarNavItems = [
-  {
-    title: 'Profile',
-    icon: <IconUser size={18} />,
-    href: '/settings',
-  },
-  {
-    title: 'Account',
-    icon: <IconTool size={18} />,
-    href: '/settings/account',
-  },
-  {
-    title: 'Appearance',
-    icon: <IconPalette size={18} />,
-    href: '/settings/appearance',
-  },
-  {
-    title: 'Notifications',
-    icon: <IconNotification size={18} />,
-    href: '/settings/notifications',
-  },
-  {
-    title: 'Display',
-    icon: <IconBrowserCheck size={18} />,
-    href: '/settings/display',
-  },
-  {
-    title: 'Error Example',
-    icon: <IconExclamationCircle size={18} />,
-    href: '/settings/error-example',
-  },
-]

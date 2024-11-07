@@ -1,5 +1,5 @@
 import { FaStar } from 'react-icons/fa'
-import { ISimpleStep, IReview, IFaq } from './type'
+import { ISimpleStep, IReview, IFaq, IDataFormSettingSelect } from './type'
 import { microphone, clock, file } from '@/components/assets/images'
 import { IoPersonCircle } from 'react-icons/io5'
 export const dataSimpleStep: ISimpleStep[] = [
@@ -93,5 +93,31 @@ export const dataFaq: IFaq[] = [
   {
     title: 'What types of content can I translate?',
     description: 'Audio with mp3 and wav types',
+  },
+]
+
+export const dataFormSettingsSelectLeft: IDataFormSettingSelect[] = [
+  {
+    label: 'Gender',
+    placeholder: 'Your Gender',
+    selectItem: ['Male', 'Female', 'Other'],
+  },
+  {
+    label: 'Language',
+    placeholder: 'Your Language',
+    selectItem: ['Indonesia', 'English', 'Portugis'],
+  },
+]
+
+export const dataFormSettingsSelectRight: IDataFormSettingSelect[] = [
+  {
+    label: 'Country',
+    placeholder: 'Your Country',
+    selectItem: ['Indonesia', 'English', 'Netherland'],
+  },
+  {
+    label: 'Time Zone',
+    placeholder: 'Your Time Zone',
+    selectItem: ['UTC+07:00', 'Coming Soon', 'Other'],
   },
 ]

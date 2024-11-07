@@ -29,3 +29,9 @@ export interface IFaq {
   title: string
   description: string
 }
+
+export interface IDataFormSettingSelect {
+  label: string
+  placeholder: string
+  selectItem: string[]
+}
