@@ -22,7 +22,7 @@ const AppShell = () => {
   const [isCollapsed] = useIsCollapsed()
   const location = useLocation()
   const navigate = useNavigate()
-  const { message, accessToken } = useAppSelector((store) => store.user)
+  // const { message, accessToken } = useAppSelector((store) => store.user)
 
   function generateBreadcrumbs(): React.ReactNode[] {
     const paths = location.pathname.split('/').filter((path) => path)
