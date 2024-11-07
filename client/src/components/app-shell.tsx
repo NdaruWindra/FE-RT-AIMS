@@ -12,15 +12,16 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from './ui/breadcrumb'
-import { useEffect } from 'react'
-import { toast } from './ui/use-toast'
-import { useAppSelector } from '@/hooks/use-redux'
+// import { useEffect } from 'react'
+// import { toast } from './ui/use-toast'
+// import { useAppSelector } from '@/hooks/use-redux'
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
 const AppShell = () => {
   const [isCollapsed] = useIsCollapsed()
   const location = useLocation()
+  // const navigate = useNavigate()
   const navigate = useNavigate()
   // const { message, accessToken } = useAppSelector((store) => store.user)
 
