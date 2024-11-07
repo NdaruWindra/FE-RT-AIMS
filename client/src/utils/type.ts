@@ -51,3 +51,8 @@ export interface ISideBarLink {
 //   <span className='ms-3 flex-1 whitespace-nowrap'>History</span>
 // </NavLink>
 // </li>
+export interface IDataFormSettingSelect {
+  label: string
+  placeholder: string
+  selectItem: string[]
+}

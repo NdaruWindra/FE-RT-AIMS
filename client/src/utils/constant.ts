@@ -1,5 +1,11 @@
 import { FaStar } from 'react-icons/fa'
-import { ISimpleStep, IReview, IFaq, ISideBarLink } from './type'
+import {
+  ISimpleStep,
+  IReview,
+  IFaq,
+  ISideBarLink,
+  IDataFormSettingSelect,
+} from './type'
 import { microphone, clock, file } from '@/components/assets/images'
 import { IoPersonCircle } from 'react-icons/io5'
 import {
@@ -122,5 +128,31 @@ export const sideBarLinks: ISideBarLink[] = [
     title: 'Settings',
     routes: '/dashboard/settings',
     icon: MdOutlineSettings,
+  },
+]
+
+export const dataFormSettingsSelectLeft: IDataFormSettingSelect[] = [
+  {
+    label: 'Gender',
+    placeholder: 'Your Gender',
+    selectItem: ['Male', 'Female', 'Other'],
+  },
+  {
+    label: 'Language',
+    placeholder: 'Your Language',
+    selectItem: ['Indonesia', 'English', 'Portugis'],
+  },
+]
+
+export const dataFormSettingsSelectRight: IDataFormSettingSelect[] = [
+  {
+    label: 'Country',
+    placeholder: 'Your Country',
+    selectItem: ['Indonesia', 'English', 'Netherland'],
+  },
+  {
+    label: 'Time Zone',
+    placeholder: 'Your Time Zone',
+    selectItem: ['UTC+07:00', 'Coming Soon', 'Other'],
   },
 ]
