@@ -1,7 +1,13 @@
 import { FaStar } from 'react-icons/fa'
-import { ISimpleStep, IReview, IFaq } from './type'
+import { ISimpleStep, IReview, IFaq, ISideBarLink } from './type'
 import { microphone, clock, file } from '@/components/assets/images'
 import { IoPersonCircle } from 'react-icons/io5'
+import {
+  MdDashboardCustomize,
+  MdHistory,
+  MdOutlineFilePresent,
+  MdOutlineSettings,
+} from 'react-icons/md'
 export const dataSimpleStep: ISimpleStep[] = [
   {
     title: 'Live Audio Recording in Real-Time',
@@ -93,5 +99,28 @@ export const dataFaq: IFaq[] = [
   {
     title: 'What types of content can I translate?',
     description: 'Audio with mp3 and wav types',
+  },
+]
+
+export const sideBarLinks: ISideBarLink[] = [
+  {
+    title: 'Dashboard',
+    routes: '/dashboard',
+    icon: MdDashboardCustomize,
+  },
+  {
+    title: 'History',
+    routes: '/dashboard/history',
+    icon: MdHistory,
+  },
+  {
+    title: 'Summarize AI',
+    routes: '/dashboard/summarize',
+    icon: MdOutlineFilePresent,
+  },
+  {
+    title: 'Settings',
+    routes: '/dashboard/settings',
+    icon: MdOutlineSettings,
   },
 ]

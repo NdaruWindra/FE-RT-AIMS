@@ -1,12 +1,12 @@
 import { Outlet } from 'react-router-dom'
 import {
-  IconBrowserCheck,
-  IconExclamationCircle,
-  IconNotification,
-  IconPalette,
-  IconTool,
-  IconUser,
-} from '@tabler/icons-react'
+  FiUser,
+  FiTool,
+  FiLayers,
+  FiBell,
+  FiMonitor,
+  FiAlertCircle,
+} from 'react-icons/fi'
 import { Layout } from '@/components/custom/layout'
 import { Search } from '@/components/search'
 import { Separator } from '@/components/ui/separator'
@@ -52,32 +52,32 @@ export default function Settings() {
 const sidebarNavItems = [
   {
     title: 'Profile',
-    icon: <IconUser size={18} />,
+    icon: <FiUser size={18} />,
     href: '/settings',
   },
   {
     title: 'Account',
-    icon: <IconTool size={18} />,
+    icon: <FiTool size={18} />,
     href: '/settings/account',
   },
   {
     title: 'Appearance',
-    icon: <IconPalette size={18} />,
+    icon: <FiLayers size={18} />,
     href: '/settings/appearance',
   },
   {
     title: 'Notifications',
-    icon: <IconNotification size={18} />,
+    icon: <FiBell size={18} />,
     href: '/settings/notifications',
   },
   {
     title: 'Display',
-    icon: <IconBrowserCheck size={18} />,
+    icon: <FiMonitor size={18} />,
     href: '/settings/display',
   },
   {
     title: 'Error Example',
-    icon: <IconExclamationCircle size={18} />,
+    icon: <FiAlertCircle size={18} />,
     href: '/settings/error-example',
   },
 ]

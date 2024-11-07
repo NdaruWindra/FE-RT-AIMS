@@ -6,7 +6,7 @@ import {
   IconPalette,
   IconTool,
   IconUser,
-} from '@tabler/icons-react'
+} from ''
 import { Layout } from '@/components/custom/layout'
 import { Search } from '@/components/search'
 import { Separator } from '@/components/ui/separator'

@@ -22,7 +22,7 @@ const AppShell = () => {
   const [isCollapsed] = useIsCollapsed()
   const location = useLocation()
   const navigate = useNavigate()
-  const { message, accessToken } = useAppSelector((store) => store.user)
+  // const { message, accessToken } = useAppSelector((store) => store.user)
 
   function generateBreadcrumbs(): React.ReactNode[] {
     const paths = location.pathname.split('/').filter((path) => path)
@@ -57,16 +57,16 @@ const AppShell = () => {
     }, [])
   }
 
-  useEffect(() => {
-    if (!accessToken) {
-      return navigate('/sign-in')
-    } else {
-      toast({
-        title: 'Success',
-        description: message,
-      })
-    }
-  }, [])
+  // useEffect(() => {
+  //   if (!accessToken) {
+  //     return navigate('/sign-in')
+  //   } else {
+  //     toast({
+  //       title: 'Success',
+  //       description: message,
+  //     })
+  //   }
+  // }, [])
 
   return (
     <div className='relative flex h-full bg-background'>
