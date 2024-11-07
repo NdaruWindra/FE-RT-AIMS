@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Search } from '@/components/search'
 import {
   Select,
@@ -11,6 +12,9 @@ import { Separator } from '@/components/ui/separator'
 import { TableHistory } from './components/table-detail'
 
 export default function ProductTable() {
+  // State untuk menyimpan pilihan sort order
+  const [sortOrder, setSortOrder] = useState<string>('a-z')
+
   return (
     <div className='relative w-full shadow-md sm:rounded-lg'>
       <h1 className='text-2xl font-bold'>detail</h1>
@@ -18,7 +22,7 @@ export default function ProductTable() {
       <Separator className='my-4' />
 
       <div className='grid grid-cols-2 items-end justify-between'>
-        <Select>
+        <Select onValueChange={(value) => setSortOrder(value)}>
           <SelectTrigger className='w-[180px]'>
             <SelectValue placeholder='Filter By' />
           </SelectTrigger>
@@ -35,7 +39,8 @@ export default function ProductTable() {
         <Search />
       </div>
 
-      <TableHistory />
+      {/* Kirimkan sortOrder ke TableHistory sebagai prop */}
+      <TableHistory sortOrder={sortOrder} />
     </div>
   )
 }
