@@ -1,9 +1,11 @@
+import { NavLink } from 'react-router-dom'
+
 export default function Sidebar() {
   return (
     <>
       <button
         type='button'
-        className='ms-3  inline-flex items-center rounded-lg p-2 text-sm text-gray-500 hover:bg-primary focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 md:hidden'
+        className='ms-3 inline-flex items-center rounded-lg p-2 text-sm text-gray-500 hover:bg-primary focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 md:hidden'
       >
         <span className='sr-only'>Open sidebar</span>
         <svg
@@ -28,38 +30,63 @@ export default function Sidebar() {
         <div className='0 h-full overflow-y-auto bg-primary px-3 py-4 dark:bg-gray-800'>
           <ul className='space-y-2 font-medium'>
             <li>
-              <a
-                href='#'
-                className='group flex items-center rounded-lg p-2 text-textPrimary hover:bg-colorPrimary dark:text-primary'
+              <NavLink
+                to='/dashboard'
+                end
+                className={({ isActive }) =>
+                  `group flex items-center rounded-lg p-2 ${
+                    isActive
+                      ? 'bg-colorPrimary text-white'
+                      : 'text-textPrimary hover:bg-colorPrimary dark:text-primary'
+                  }`
+                }
               >
                 <span className='ms-3'>Dashboard</span>
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a
-                href='#'
-                className='group flex items-center rounded-lg p-2 text-textPrimary hover:bg-colorPrimary dark:text-primary'
+              <NavLink
+                to='/dashboard/history'
+                className={({ isActive }) =>
+                  `group flex items-center rounded-lg p-2 ${
+                    isActive
+                      ? 'bg-colorPrimary text-white'
+                      : 'text-textPrimary hover:bg-colorPrimary dark:text-primary'
+                  }`
+                }
               >
                 <span className='ms-3 flex-1 whitespace-nowrap'>History</span>
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a
-                href='#'
-                className='group flex items-center rounded-lg p-2 text-textPrimary hover:bg-colorPrimary dark:text-primary'
+              <NavLink
+                to='/dashboard/summarize'
+                className={({ isActive }) =>
+                  `group flex items-center rounded-lg p-2 ${
+                    isActive
+                      ? 'bg-colorPrimary text-white'
+                      : 'text-textPrimary hover:bg-colorPrimary dark:text-primary'
+                  }`
+                }
               >
                 <span className='ms-3 flex-1 whitespace-nowrap'>
                   Summarize AI
                 </span>
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a
-                href='#'
-                className='group flex items-center rounded-lg p-2 text-textPrimary hover:bg-colorPrimary dark:text-primary'
+              <NavLink
+                to='/dashboard/settings'
+                className={({ isActive }) =>
+                  `group flex items-center rounded-lg p-2 ${
+                    isActive
+                      ? 'bg-colorPrimary text-white'
+                      : 'text-textPrimary hover:bg-colorPrimary dark:text-primary'
+                  }`
+                }
               >
                 <span className='ms-3 flex-1 whitespace-nowrap'>Settings</span>
-              </a>
+              </NavLink>
             </li>
           </ul>
         </div>

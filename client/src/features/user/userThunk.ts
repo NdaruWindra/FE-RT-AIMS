@@ -25,8 +25,6 @@ export async function signinThunk(data: any, thunkAPI: any) {
       password: data.password,
     })
 
-    console.log(response.data)
-
     return response.data
   } catch (error: any) {
     console.log(error)

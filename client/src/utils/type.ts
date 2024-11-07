@@ -1,14 +1,12 @@
 import { IconType } from 'react-icons/lib'
 
 export interface IUserState {
-  id: number
-  uuid: string
+  id: string
   username: string
   email: string
-  password: string
   role: string
   accessToken?: string
-  id_history?: string
+  message?: string
   isLoading: boolean
 }
 

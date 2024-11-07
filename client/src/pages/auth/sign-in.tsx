@@ -17,7 +17,7 @@ export default function SignIn() {
             </div>
           </div>
           <div className='space-y-2 text-center'>
-            <h1 className='text-textPrimary text-2xl font-semibold tracking-tight'>
+            <h1 className='text-2xl font-semibold tracking-tight text-textPrimary'>
               Welcome Back to Infinite Learning
             </h1>
             <p className='text-sm text-muted-foreground'>

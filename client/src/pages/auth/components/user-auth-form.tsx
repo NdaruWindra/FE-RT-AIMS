@@ -1,6 +1,6 @@
-import { HTMLAttributes, useState } from 'react'
+import { HTMLAttributes, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FcGoogle } from 'react-icons/fc'
@@ -19,7 +19,7 @@ import { PasswordInput } from '@/components/custom/password-input'
 import { cn } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { useAppDispatch } from '@/hooks/use-redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
 import { signin } from '@/features/user/userSlice'
 
 interface UserAuthFormProps extends HTMLAttributes<HTMLDivElement> {}
@@ -40,8 +40,9 @@ const formSchema = z.object({
 })
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading] = useState(false) 
+  const { isLoading, accessToken } = useAppSelector((state) => state.user)
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,9 +53,15 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   })
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-    console.log(data)
     dispatch(signin(data))
   }
+
+  // ! INITIAL RENDER
+  useEffect(() => {
+    if (accessToken) {
+      navigate('/dashboard')
+    }
+  }, [isLoading])
 
   return (
     <div className={cn('grid gap-6', className)} {...props}>

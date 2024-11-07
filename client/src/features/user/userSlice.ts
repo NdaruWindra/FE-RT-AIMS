@@ -4,14 +4,13 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { signinThunk, signupThunk } from './userThunk'
 
 const initialState: IUserState = {
-  id: 0,
-  uuid: '',
+  id: '',
   username: '',
   email: '',
-  password: '',
   role: '',
   accessToken: '',
-  id_history: '',
+  message: '',
+
   isLoading: false,
 }
 
@@ -23,7 +22,7 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    incrementByAmount: (state, action: PayloadAction) => {},
+    // incrementByAmount: (state, action: PayloadAction) => {},
   },
   extraReducers(builder) {
     builder
@@ -42,7 +41,13 @@ export const userSlice = createSlice({
       .addCase(signin.pending, function (state) {
         state.isLoading = true
       })
-      .addCase(signin.fulfilled, function (state) {
+      .addCase(signin.fulfilled, function (state, { payload }) {
+        state.accessToken = payload.data.accessToken
+        state.id = payload.data.id
+        state.email = payload.data.email
+        state.username = payload.data.username
+        state.message = payload.message
+
         state.isLoading = false
       })
       .addCase(signin.rejected, function (state) {
@@ -52,6 +57,6 @@ export const userSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { incrementByAmount } = userSlice.actions
+export const {} = userSlice.actions
 
 export default userSlice.reducer
