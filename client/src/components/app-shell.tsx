@@ -57,16 +57,16 @@ const AppShell = () => {
     }, [])
   }
 
-  useEffect(() => {
-    if (!accessToken) {
-      return navigate('/sign-in')
-    } else {
-      toast({
-        title: 'Success',
-        description: message,
-      })
-    }
-  }, [])
+  // useEffect(() => {
+  //   if (!accessToken) {
+  //     return navigate('/sign-in')
+  //   } else {
+  //     toast({
+  //       title: 'Success',
+  //       description: message,
+  //     })
+  //   }
+  // }, [])
 
   return (
     <div className='relative flex h-full bg-background'>
