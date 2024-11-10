@@ -10,7 +10,21 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { TableHistory } from './components/table'
 
+import { useEffect } from 'react'
+import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
+import { getMyHistory } from '@/features/history/historySlice'
+import { PaginationHistory } from './components/pagination-history'
+
 export default function ProductTable() {
+  const dispatch = useAppDispatch()
+
+  const user = useAppSelector((state) => state.user)
+  const history = useAppSelector((state) => state.history)
+
+  useEffect(function () {
+    dispatch(getMyHistory(user.accessToken))
+  }, [])
+
   return (
     <div className='relative w-full shadow-md sm:rounded-lg mt-10'>
       <h1 className='text-2xl font-bold'>My History</h1>
@@ -35,7 +49,9 @@ export default function ProductTable() {
         <Search />
       </div>
 
-      <TableHistory />
+      <TableHistory data={history.allHistory} />
+
+      <PaginationHistory data={history.allHistory} />
     </div>
   )
 }

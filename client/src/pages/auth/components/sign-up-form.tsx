@@ -1,6 +1,6 @@
-import { HTMLAttributes} from 'react'
+import { HTMLAttributes, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FcGoogle } from 'react-icons/fc'
@@ -19,6 +19,7 @@ import { PasswordInput } from '@/components/custom/password-input'
 import { cn } from '@/lib/utils'
 import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
 import { signup } from '@/features/user/userSlice'
+import { toast } from '@/components/ui/use-toast'
 
 interface SignUpFormProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -39,10 +40,13 @@ const formSchema = z.object({
 })
 
 export function SignUpForm({ className, ...props }: SignUpFormProps) {
-  const { isLoading } = useAppSelector(function (state) {
-    return state.user
-  })
+  const { isLoading, isAuthenticated, message } = useAppSelector(
+    function (state) {
+      return state.user
+    }
+  )
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,9 +58,23 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
   })
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-    console.log(data)
     dispatch(signup(data))
+
+    toast({ title: message.status, description: message.text })
+    if (message.status === 'Success') {
+      navigate('/sign-in')
+    }
   }
+
+  // ! INITIAL RENDER
+  useEffect(
+    function () {
+      if (isAuthenticated) {
+        navigate('/dashboard')
+      }
+    },
+    [isAuthenticated]
+  )
 
   return (
     <div className={cn('grid gap-6', className)} {...props}>
