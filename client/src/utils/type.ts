@@ -1,12 +1,47 @@
 import { IconType } from 'react-icons/lib'
 
+export type TSingleHistory = {
+  id_history: string
+  title: string
+  createdAt: string
+  fileName: string
+}
+export type TSingleResult = {
+  id_result: string
+  transcript: string
+  summary: string
+}
+export type TMessage = {
+  status: 'Error' | 'Success' | ''
+  text: string
+}
+
 export interface IUserState {
   id: string
   username: string
   email: string
   role: string
   accessToken?: string
-  message?: string
+  refreshToken?: string
+
+  message: TMessage
+
+  isAuthenticated: boolean
+  isLoading: boolean
+}
+
+export interface IHistoryState {
+  singleHistory: TSingleHistory
+  allHistory: TSingleHistory[]
+
+  message: TMessage
+
+  paginationHistory: {
+    currentPage: number
+    totalPage: number
+  }
+
+  result: TSingleResult
   isLoading: boolean
 }
 

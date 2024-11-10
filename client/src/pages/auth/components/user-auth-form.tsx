@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
-import { signin } from '@/features/user/userSlice'
+import { getRefreshToken, signin } from '@/features/user/userSlice'
 
 interface UserAuthFormProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -40,7 +40,9 @@ const formSchema = z.object({
 })
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const { isLoading, accessToken } = useAppSelector((state) => state.user)
+  const { isLoading, isAuthenticated, refreshToken } = useAppSelector(
+    (state) => state.user
+  )
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
@@ -57,11 +59,23 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   }
 
   // ! INITIAL RENDER
-  useEffect(() => {
-    if (accessToken) {
-      navigate('/dashboard')
-    }
-  }, [isLoading])
+  useEffect(
+    function () {
+      if (isAuthenticated) {
+        navigate('/dashboard')
+      }
+    },
+    [isAuthenticated]
+  )
+
+  useEffect(
+    function () {
+      if (refreshToken && !isAuthenticated) {
+        dispatch(getRefreshToken(refreshToken))
+      }
+    },
+    [refreshToken]
+  )
 
   return (
     <div className={cn('grid gap-6', className)} {...props}>
