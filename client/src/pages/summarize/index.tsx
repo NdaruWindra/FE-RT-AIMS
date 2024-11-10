@@ -76,7 +76,7 @@ function Index() {
     };
 
     return (
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl mt-10">
             <section className="flex flex-col lg:flex-row w-full items-start gap-4 lg:gap-0">
                 <div className="flex w-full lg:w-1/2 flex-col justify-center">
                     <h1 className="text-2xl md:text-3xl mt-0 font-bold text-primary">

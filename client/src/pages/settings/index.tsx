@@ -1,4 +1,3 @@
-import { Button } from '@/components/custom/button'
 import { Layout } from '@/components/custom/layout'
 import { Form } from '@/components/ui/form'
 import { useForm } from 'react-hook-form'
@@ -9,6 +8,7 @@ import {
   dataFormSettingsSelectLeft,
   dataFormSettingsSelectRight,
 } from '@/utils/constant'
+import { Button } from '@/components/ui/button'
 
 export default function Settings() {
   const form = useForm()
@@ -36,10 +36,10 @@ export default function Settings() {
               </div>
             </div>
             <div className='space-x-2'>
-              <Button className='w-28 bg-colorPrimary text-primary hover:text-textPrimary '>
+              <Button className='w-28 bg-colorPrimary text-white dark:hover:text-textPrimary'>
                 Change Picture
               </Button>
-              <Button className='w-28 bg-primary text-red-500'>
+              <Button className='w-28 bg-red-500 text-white dark:hover:text-textPrimary'>
                 Remove Picture
               </Button>
             </div>
@@ -63,7 +63,7 @@ export default function Settings() {
               placeholder='Your Nickname'
             />
           </Form>
-          <Button className='w-28 bg-colorPrimary text-primary hover:text-textPrimary '>
+          <Button className='w-28 bg-colorPrimary text-white dark:hover:text-textPrimary'>
             Confirm
           </Button>
         </section>

@@ -12,7 +12,7 @@ import { TableHistory } from './components/table'
 
 export default function ProductTable() {
   return (
-    <div className='relative w-full shadow-md sm:rounded-lg'>
+    <div className='relative w-full shadow-md sm:rounded-lg mt-10'>
       <h1 className='text-2xl font-bold'>My History</h1>
 
       <Separator className='my-4' />
