@@ -17,7 +17,7 @@ export default function ProductTable() {
 
   return (
     <div className='relative w-full shadow-md sm:rounded-lg'>
-      <h1 className='text-2xl font-bold'>detail</h1>
+      <h1 className='text-2xl font-bold'>Detail</h1>
 
       <Separator className='my-4' />
 

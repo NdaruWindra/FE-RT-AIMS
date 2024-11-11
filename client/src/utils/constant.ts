@@ -131,6 +131,19 @@ export const sideBarLinks: ISideBarLink[] = [
   },
 ]
 
+export const sideBarLinksAdmin: ISideBarLink[] = [
+  {
+    title: 'Dashboard',
+    routes: '/dashboard-admin',
+    icon: MdDashboardCustomize,
+  },
+  {
+    title: 'History',
+    routes: '/dashboard-admin/history-admin',
+    icon: MdHistory,
+  },
+]
+
 export const dataFormSettingsSelectLeft: IDataFormSettingSelect[] = [
   {
     label: 'Gender',

@@ -26,7 +26,7 @@ const user: UserData[] = [
   { userName: 'Selta Jaya Putra', history: '4', createdAt: '2023-04-20' },
   { userName: 'Sutri', history: '30', createdAt: '2023-05-12' },
   { userName: 'M.Ilyas', history: '15', createdAt: '2023-06-18' },
-  { userName: 'ngga tau siapa', history: '4', createdAt: '2023-07-21' },
+  { userName: 'Marco', history: '4', createdAt: '2023-07-21' },
 ];
 
 export function TableHistory({ sortOrder, onEdit }: TableHistoryProps) {
