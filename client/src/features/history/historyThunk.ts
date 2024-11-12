@@ -1,4 +1,4 @@
-import { customFetch } from '@/utils/axios'
+import { customFetch, customFetchAudio } from '@/utils/axios'
 
 export async function getMyHistoryThunk(token: any, thunkAPI: any) {
   try {
@@ -8,6 +8,27 @@ export async function getMyHistoryThunk(token: any, thunkAPI: any) {
       },
     })
 
+    return response.data
+  } catch (error: any) {
+    console.log(error)
+    return thunkAPI.rejectWithValue(error.response.data.message)
+  }
+}
+
+export async function uploadNewAudioThunk(data: any, thunkAPI: any) {
+  try {
+    console.log(data)
+
+    const formData = new FormData()
+    formData.append('file', data)
+
+    const response = await customFetchAudio.post('/upload-audio/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+
+    console.log(response)
     return response.data
   } catch (error: any) {
     console.log(error)

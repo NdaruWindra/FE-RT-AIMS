@@ -161,7 +161,6 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
               {/* Google */}
               <Button
                 className='w-full border hover:border-transparent hover:bg-colorPrimary '
-                loading={isLoading}
                 leftSection={<FcGoogle className='h-4 w-4' />}
               >
                 Google
@@ -171,7 +170,6 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
               <Button
                 className='w-full border hover:border-transparent hover:bg-colorPrimary'
                 type='button'
-                loading={isLoading}
                 leftSection={<FaApple className='h-4 w-4' />}
               >
                 Apple

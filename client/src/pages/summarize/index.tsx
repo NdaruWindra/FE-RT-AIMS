@@ -1,175 +1,247 @@
-import { useState, useRef } from 'react';
-import { PiUploadBold } from 'react-icons/pi';
-import { FaMicrophone } from 'react-icons/fa6';
-import { MdContentCopy } from "react-icons/md";
-import { IoMdDownload } from "react-icons/io";
-import { GrPowerReset } from "react-icons/gr";
-import 'flag-icons/css/flag-icons.min.css';
-import { Upload } from './components/upload';
+import { useState, useRef, useEffect } from 'react'
+import { PiUploadBold } from 'react-icons/pi'
+import { FaMicrophone, FaSquare, FaSpinner } from 'react-icons/fa6'
+import { IoMdDownload } from 'react-icons/io'
+import { GrPowerReset } from 'react-icons/gr'
+import 'flag-icons/css/flag-icons.min.css'
+import { Upload } from './components/upload'
+import { Button } from '@/components/ui/button'
+import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
+import { uploadAudio } from '@/features/history/historySlice'
 
 function Index() {
-    const [selectedLanguage, setSelectedLanguage] = useState('id');
-    const [showUpload, setShowUpload] = useState(false);
-    const [isRecording, setIsRecording] = useState(false);
-    const [audioUrl, setAudioUrl] = useState<string | null>(null);
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-    const audioChunksRef = useRef<Blob[]>([]);
+  const [selectedLanguage, setSelectedLanguage] = useState('id')
+  const [showUpload, setShowUpload] = useState(false)
+  const [isRecording, setIsRecording] = useState(false)
+  const [audioUrl, setAudioUrl] = useState<string | null>(null)
+  const [isSummarizing, setIsSummarizing] = useState(false)
+  const [file, setFile] = useState<File | null>(null)
 
-    const handleLanguageChange = (event: React.FormEvent<HTMLSelectElement>) => {
-        setSelectedLanguage(event.currentTarget.value);
-    };
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const audioChunksRef = useRef<Blob[]>([])
+  const history = useAppSelector((state) => state.history)
+  const dispatch = useAppDispatch()
 
-    const handleStartRecording = async () => {
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorderRef.current = new MediaRecorder(stream);
+  useEffect(() => {
+    return () => {
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.stream
+          ?.getTracks()
+          .forEach((track) => track.stop())
+      }
+    }
+  }, [])
 
-            mediaRecorderRef.current.ondataavailable = (event: BlobEvent) => {
-                audioChunksRef.current.push(event.data);
-            };
+  const handleLanguageChange = (event: React.FormEvent<HTMLSelectElement>) => {
+    setSelectedLanguage(event.currentTarget.value)
+  }
 
-            mediaRecorderRef.current.onstop = () => {
-                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/mp3' });
-                const url = URL.createObjectURL(audioBlob);
-                setAudioUrl(url);
-                audioChunksRef.current = [];
-            };
+  const handleStartRecording = async () => {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      mediaRecorderRef.current = new MediaRecorder(stream)
 
-            mediaRecorderRef.current.start();
-            setIsRecording(true);
-        }
-    };
+      mediaRecorderRef.current.ondataavailable = (event: BlobEvent) => {
+        audioChunksRef.current.push(event.data)
+      }
 
-    const handleStopRecording = () => {
-        if (mediaRecorderRef.current) {
-            mediaRecorderRef.current.stop();
-            setIsRecording(false);
-        }
-    };
+      mediaRecorderRef.current.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: 'audio/wav',
+        })
+        const audioFile = new File([audioBlob], `${Date.now()}.wav`, {
+          type: 'audio/wav',
+          lastModified: Date.now(),
+        })
 
-    const handleDownload = () => {
-        if (audioUrl) {
-            const link = document.createElement('a');
-            link.href = audioUrl;
-            link.download = 'recording.mp3';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    };
+        const url = URL.createObjectURL(audioBlob)
+        setFile(audioFile)
+        setAudioUrl(url)
+        audioChunksRef.current = []
+      }
 
-    const handleCopyLink = () => {
-        if (audioUrl) {
-            navigator.clipboard.writeText(audioUrl).then(() => {
-                alert('Audio URL berhasil disalin ke clipboard!');
-            });
-        }
-    };
+      mediaRecorderRef.current.start()
+      setIsRecording(true)
+    }
+  }
 
-    const handleReset = () => {
-        setAudioUrl(null);
-        audioChunksRef.current = [];
-    };
+  const handleStopRecording = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop()
+      setIsRecording(false)
+    }
+  }
 
-    const handleCloseUpload = () => {
-        setShowUpload(false);
-    };
+  const handleDownload = () => {
+    if (audioUrl) {
+      const link = document.createElement('a')
+      link.href = audioUrl
+      link.download = 'recording.wav'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    }
+  }
 
-    return (
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl mt-10">
-            <section className="flex flex-col lg:flex-row w-full items-start gap-4 lg:gap-0">
-                <div className="flex w-full lg:w-1/2 flex-col justify-center">
-                    <h1 className="text-2xl md:text-3xl mt-0 font-bold text-primary">
-                        Summarized AI
-                    </h1>
-                </div>
+  const handleReset = () => {
+    setAudioUrl(null)
+    audioChunksRef.current = []
+    setIsSummarizing(false)
+  }
 
-                <div className="flex mt-2 lg:mt-0 ml-auto lg:mr-16">
-                    <button
-                        className="flex items-center px-4 py-2 lg:-mr-20 bg-colorPrimary text-primary font-semibold rounded-lg hover:bg-primary hover:text-colorPrimary transition duration-200 ease-in-out"
-                        onClick={() => setShowUpload(true)}
-                    >
-                        Upload File
-                        <PiUploadBold className="h-6 w-6 ml-2" />
-                    </button>
-                </div>
-            </section>
-            {showUpload && <Upload onClose={handleCloseUpload} />}
+  const handleCloseUpload = () => {
+    setShowUpload(false)
+  }
 
-            <section className="flex flex-col w-full items-start lg:-ml-20 lg:pl-20 mt-6 lg:mt-8">
-                <div className="flex w-full lg:w-1/2 flex-col justify-center">
-                    <h2 className="text-lg md:text-xl lg:text-2xl text-primary">
-                        Record your meeting, get instant transcribe and summary by AI
-                    </h2>
-                </div>
+  function handleSummarize(e: any) {
+    e.preventDefault()
+    if (file) {
+      dispatch(uploadAudio(file))
+    }
+  }
 
-                <div className="flex items-center mt-4 lg:mt-8 space-x-2 md:space-x-4">
-                    <span className={`fi fi-${selectedLanguage} text-2xl`} /> 
-                    <select
-                        className="px-4 py-2 bg-[#FDF7FE] text-textPrimary font-semibold rounded-lg hover:bg-gray-300 w-full md:w-auto"
-                        value={selectedLanguage}
-                        onChange={handleLanguageChange}
-                    >
-                        <option value='gb'>English Language</option>
-                        <option value='id'>Indonesia Language</option>
-                        <option value='other'>Other Languages Soon</option> 
-                    </select>
-                </div>
-            </section>
+  return (
+    <div className='container mt-10 space-y-10'>
+      <section className='flex justify-between'>
+        <h1 className='text-2xl font-bold md:text-3xl'>Summarize Meeting AI</h1>
+        <Button
+          className='hidden bg-colorPrimary font-semibold text-white dark:hover:text-textPrimary md:flex'
+          onClick={() => setShowUpload(true)}
+          disabled={history.isLoading}
+        >
+          Upload File
+          <PiUploadBold className='h-6 w-6' />
+        </Button>
+      </section>
+      {showUpload && <Upload onClose={handleCloseUpload} />}
 
-            <section className="py-6 lg:py-8 px-4 md:px-6 lg:px-8 mt-8 lg:mt-12">
-                <div className="max-w-lg mx-auto bg-primary rounded-lg shadow-lg p-6 lg:p-8">
-                    <h2 className="text-xl md:text-2xl font-bold text-textPrimary text-center">
-                        Record Audio
-                    </h2>
-                    <div className="flex flex-col items-center space-y-4 mt-4">
-                        {isRecording ? (
-                            <button 
-                                onClick={handleStopRecording} 
-                                className="px-4 py-3 bg-red-600 text-white font-semibold rounded-full flex items-center">
-                                <FaMicrophone className="h-6 w-6" />
-                            </button>
-                        ) : (
-                            <button 
-                                onClick={handleStartRecording} 
-                                className="px-4 py-3 bg-colorPrimary text-white font-semibold rounded-full flex items-center">
-                                <FaMicrophone className="h-6 w-6" />
-                            </button>
-                        )}
+      <section className='space-y-5 lg:w-1/2'>
+        <h2 className='md:text-xl lg:text-2xl'>
+          Record your meeting, get instant transcribe and summary by AI
+        </h2>
 
-                        {audioUrl && (
-                            <div className="flex flex-col items-center space-y-4 mt-4">
-                                <audio controls src={audioUrl} className="mt-4 w-full" />
-                                
-                                <div className="flex flex-row items-center space-x-2 md:space-x-4">
-                                    <button 
-                                        onClick={handleDownload} 
-                                        className="px-3 py-2 md:px-4 md:py-3 bg-blue-500 text-white font-semibold rounded-full flex items-center hover:bg-blue-600 transition duration-200 ease-in-out"
-                                    >
-                                        <IoMdDownload className="h-5 w-5 md:h-6 md:w-6"/>
-                                    </button>
-
-                                    <button 
-                                        onClick={handleCopyLink} 
-                                        className="px-3 py-2 md:px-4 md:py-3 bg-yellow-500 text-black font-semibold rounded-full flex items-center hover:bg-yellow-600 transition duration-200 ease-in-out"
-                                    >
-                                        <MdContentCopy className="h-5 w-5 md:h-6 md:w-6" />
-                                    </button>
-
-                                    <button 
-                                        onClick={handleReset} 
-                                        className="px-3 py-2 md:px-4 md:py-3 bg-red-500 text-white font-semibold rounded-full flex items-center hover:bg-red-600 transition duration-200 ease-in-out"
-                                    >
-                                        <GrPowerReset className="h-5 w-5 md:h-6 md:w-6" />
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </section>
+        <div className='flex items-center space-x-4'>
+          <span className={`fi fi-${selectedLanguage} text-2xl`} />
+          <select
+            className='w-full rounded-lg p-3 font-semibold text-textPrimary hover:bg-colorPrimary hover:text-primary md:w-auto'
+            value={selectedLanguage}
+            onChange={handleLanguageChange}
+          >
+            <option value='gb'>English Language</option>
+            <option value='id'>Indonesia Language</option>
+            <option value='other'>Other Languages Soon</option>
+          </select>
         </div>
-    );
+      </section>
+
+      <section>
+        <div className='h-auto space-y-5 overflow-hidden rounded-lg shadow-lg md:flex md:h-80 md:flex-row md:space-x-5 md:space-y-0'>
+          <div className='flex flex-col items-center space-y-4 rounded-lg bg-primary p-6 md:w-1/2'>
+            <h2 className='text-center text-xl font-bold text-colorPrimary md:text-2xl'>
+              Record Audio
+            </h2>
+            {[
+              {
+                onClick: isRecording
+                  ? handleStopRecording
+                  : handleStartRecording,
+                className: `rounded-full p-5 font-semibold ${isRecording ? 'bg-red-600 hover:bg-red-700' : 'dark:bg-colorPrimary dark:hover:bg-colorPrimary-dark'}`,
+                content: isRecording ? <FaSquare /> : <FaMicrophone />,
+              },
+              {
+                onClick: () => setShowUpload(true),
+                className:
+                  'bg-colorPrimary text-white font-semibold hover:bg-colorPrimary-dark md:hidden',
+                content: (
+                  <>
+                    <PiUploadBold className='ml-2 h-6 w-6' /> Upload File
+                  </>
+                ),
+              },
+            ].map(({ onClick, className, content }, index) => (
+              <Button key={index} onClick={onClick} className={className}>
+                {content}
+              </Button>
+            ))}
+
+            {audioUrl && (
+              <div className='mt-6 flex w-full flex-col items-center space-y-4'>
+                <h2 className='text-center text-xl font-bold text-colorPrimary md:text-2xl'>
+                  Recording Result
+                </h2>
+                <audio controls src={audioUrl} className='w-3/4 md:w-1/2' />
+
+                <div className='flex space-x-3'>
+                  {[
+                    {
+                      onClick: handleDownload,
+                      bgColor: 'bg-blue-500 hover:bg-blue-600',
+                      Icon: IoMdDownload,
+                    },
+                    {
+                      onClick: handleReset,
+                      bgColor: 'bg-red-500 hover:bg-red-600',
+                      Icon: GrPowerReset,
+                    },
+                  ].map(({ onClick, bgColor, Icon }, index) => (
+                    <Button
+                      key={index}
+                      onClick={onClick}
+                      className={`rounded-full p-3 font-semibold text-white ${bgColor}`}
+                    >
+                      <Icon className='h-5 w-5' />
+                    </Button>
+                  ))}
+                </div>
+                <Button
+                  onClick={handleSummarize}
+                  className='bg-blue-500 font-semibold text-white hover:bg-blue-600'
+                >
+                  Summarize
+                </Button>
+              </div>
+            )}
+          </div>
+
+          <div className='flex flex-col space-y-4 rounded-lg bg-primary p-6 md:w-1/2'>
+            <h1 className='text-center text-xl font-bold text-colorPrimary md:text-2xl'>
+              Result
+            </h1>
+            {history.isLoading ? (
+              <div className='flex flex-col items-center justify-center space-y-2'>
+                <FaSpinner
+                  className='animate-spin text-4xl'
+                  fill='colorPrimary'
+                />
+                <p className='text-lg'>Process Summarize...</p>
+              </div>
+            ) : history.result?.transcript && history.result?.summary ? (
+              <div className='scrollbar-custom max-h-[400px] space-y-6 overflow-y-auto p-2 text-left'>
+                <div>
+                  <h2 className='text-lg font-semibold text-colorPrimary'>
+                    Transcript:
+                  </h2>
+                  <p className='text-justify'>{history.result.transcript}</p>
+                </div>
+                <div>
+                  <h2 className='text-lg font-semibold text-colorPrimary'>
+                    Summary:
+                  </h2>
+                  <p className='text-justify'>{history.result.summary}</p>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <h2 className='text-center text-xl font-bold text-muted-foreground'>
+                  No results to display
+                </h2>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    </div>
+  )
 }
 
-export default Index;
+export default Index

@@ -1,3 +1,5 @@
+import { uploadAudio } from '@/features/history/historySlice'
+import { useAppDispatch } from '@/hooks/use-redux'
 import React, { useState } from 'react'
 import { IoClose } from 'react-icons/io5'
 import { RiFolderUploadFill } from 'react-icons/ri'
@@ -9,6 +11,9 @@ interface UploadProps {
 export function Upload({ onClose }: UploadProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [file, setFile] = useState<File | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const dispatch = useAppDispatch()
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault()
@@ -33,9 +38,24 @@ export function Upload({ onClose }: UploadProps) {
     setFile(selectedFile)
   }
 
+
+  function handleOnSubmit(e: any) {
+    e.preventDefault()
+    if (file) {
+      onClose()
+      setIsLoading(true)
+      dispatch(uploadAudio(file)).finally(() => {
+        setIsLoading(false)
+      })
+    }
+  }
+
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-85'>
-      <div className='relative mx-4 w-full max-w-xs rounded-lg bg-white p-4 shadow-lg md:mx-auto md:max-w-md md:p-8'>
+      <form
+        onSubmit={handleOnSubmit}
+        className='relative mx-4 w-full max-w-xs rounded-lg bg-white p-4 shadow-lg md:mx-auto md:max-w-md md:p-8'
+      >
         <button
           onClick={onClose}
           className='absolute right-2 top-2 rounded-full text-gray-500 transition-all hover:bg-gray-800 hover:text-primary'
@@ -49,9 +69,7 @@ export function Upload({ onClose }: UploadProps) {
           Add your documents here
         </h3>
         <div
-          className={`flex flex-col items-center justify-center rounded-lg border-2 p-4 ${
-            isDragging ? 'border-blue-500 bg-blue-100' : 'border-gray-300'
-          }`}
+          className={`flex flex-col items-center justify-center rounded-lg border-2 p-4 ${isDragging ? 'border-blue-500 bg-blue-100' : 'border-gray-300'}`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
@@ -88,11 +106,14 @@ export function Upload({ onClose }: UploadProps) {
           </label>
         </div>
         <div className='flex justify-end'>
-          <button className='mt-4 rounded bg-colorPrimary px-3 py-1 text-xs text-white hover:border hover:border-colorPrimary hover:bg-primary hover:text-colorPrimary md:mt-6 md:px-4 md:py-2 md:text-base'>
-            Upload
+          <button
+            type='submit'
+            className='mt-4 rounded bg-colorPrimary px-3 py-1 text-xs text-white hover:border hover:border-colorPrimary hover:bg-primary hover:text-colorPrimary md:mt-6 md:px-4 md:py-2 md:text-base'
+          >
+            {isLoading ? 'Uploading...' : 'Upload'}
           </button>
         </div>
-      </div>
+      </form>
     </div>
   )
 }

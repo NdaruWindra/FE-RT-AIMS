@@ -5,10 +5,10 @@ import { Link } from 'react-router-dom'
 export function Footer() {
   return (
     <>
-      <footer className=' bg-colorSecondary'>
+      <footer className='bg-colorSecondary'>
         <section className='flex justify-center p-5'>
-          <div className='grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-32'>
-            <div className='flex w-80 flex-col justify-center space-y-4 p-2 text-center md:items-start'>
+          <div className='grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-44 '>
+            <div className='flex w-80 flex-col justify-center space-y-4 md:items-start'>
               <img src={imagetextIL} alt='Infinite Learning' />
               <p className='text-center text-primary md:text-start'>
                 Jl. Hang Lekui KM 2 Sambau, Kecamatan Nongsa, Kota Batam,
@@ -16,8 +16,8 @@ export function Footer() {
               </p>
             </div>
 
-            <div className='flex justify-around '>
-              <div className='space-y-2 text-primary'>
+            <div className='flex justify-around gap-5 '>
+              <div className='space-y-2'>
                 <h3 className='text-lg font-bold'>Program</h3>
                 <ul className='space-y-2'>
                   <li>
@@ -35,7 +35,7 @@ export function Footer() {
                 </ul>
               </div>
 
-              <div className='space-y-2 text-primary'>
+              <div className='space-y-2'>
                 <h3 className='text-lg font-bold'>Community</h3>
                 <ul className='space-y-2'>
                   <li>
@@ -47,7 +47,7 @@ export function Footer() {
                 </ul>
               </div>
 
-              <div className='space-y-2 text-primary'>
+              <div className='space-y-2'>
                 <h3 className='text-lg font-bold'>About</h3>
                 <ul className='space-y-2'>
                   <li>
@@ -60,29 +60,29 @@ export function Footer() {
               </div>
             </div>
 
-            <div className='flex flex-col items-center justify-center'>
-              <h3 className='mb-2 text-lg font-bold'>Our Social Media</h3>
-              <div className='mb-2 flex space-x-4'>
+            <div className='flex flex-col items-center space-y-5'>
+              <h3 className='text-lg font-bold'>Our Social Media</h3>
+              <div className='flex space-x-4'>
                 <Link
                   to='https://instagram.com'
                   target='_blank'
                   rel='noopener noreferrer'
                 >
-                  <FaInstagram className='h-8 w-8 text-primary' />
+                  <FaInstagram className='h-8 w-8' />
                 </Link>
                 <Link
                   to='https://linkedin.com'
                   target='_blank'
                   rel='noopener noreferrer'
                 >
-                  <FaLinkedin className='h-8 w-8 text-primary' />
+                  <FaLinkedin className='h-8 w-8' />
                 </Link>
                 <Link
                   to='https://tiktok.com'
                   target='_blank'
                   rel='noopener noreferrer'
                 >
-                  <FaTiktok className='h-8 w-8 text-primary' />
+                  <FaTiktok className='h-8 w-8' />
                 </Link>
               </div>
               <div className='bg-red mt-12 text-center'>
