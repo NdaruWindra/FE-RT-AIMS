@@ -63,6 +63,8 @@ const router = createBrowserRouter([
         lazy: async () => ({
           Component: (await import('./pages/settings')).default,
         }),
+
+        
       },
     ],
   },
@@ -79,7 +81,7 @@ const router = createBrowserRouter([
       {
         index: true,
         lazy: async () => ({
-          Component: (await import('./pages/dashboard')).default,
+          Component: (await import('./pages_admin/dashboard')).default,
         }),
       },
       {
@@ -92,12 +94,6 @@ const router = createBrowserRouter([
         path: 'history-detail-admin',
         lazy: async () => ({
           Component: (await import('@/pages_admin/history/detail.tsx')).default,
-        }),
-      },
-      {
-        path: 'settings-admin',
-        lazy: async () => ({
-          Component: (await import('./pages_admin/settings')).default,
         }),
       },
     ],

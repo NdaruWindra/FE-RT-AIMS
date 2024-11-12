@@ -1,57 +1,104 @@
+import { NavLink, useNavigate } from 'react-router-dom'
+import { FiMenu } from 'react-icons/fi'
+import { useEffect, useRef, useState } from 'react'
+import { sideBarLinksAdmin } from '@/utils/constant'
+import { ISideBarLink } from '@/utils/type'
+import { Button } from './custom/button'
+import { imagetextIL } from '@/components/assets/images/index'
+import { MdLogout } from 'react-icons/md'
+import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
+import { signout } from '@/features/user/userSlice'
+
 export default function Sidebar() {
+  const [openSidebar, setOpenSidebar] = useState<boolean>(false)
+  const asideRef = useRef<HTMLDivElement>(null)
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+  const { refreshToken } = useAppSelector(function (store) {
+    return store.user
+  })
+
+  function handleSidebar(sidebar: boolean) {
+    setOpenSidebar(sidebar)
+  }
+
+  function handleLogOut() {
+    if (refreshToken) {
+      dispatch(signout(refreshToken))
+      navigate('/sign-in')
+    }
+  }
+
+  useEffect(function () {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        asideRef.current &&
+        !asideRef.current.contains(event.target as Node)
+      ) {
+        setOpenSidebar(false)
+      }
+    }
+
+    // Add event listener
+    document.addEventListener('mousedown', handleClickOutside)
+    // Cleanup listener on unmount
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
   return (
     <>
-      <button
+      <Button
         type='button'
-        className='ms-3  inline-flex items-center rounded-lg p-2 text-sm text-gray-500 hover:bg-primary focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 md:hidden'
+        variant={'ghost'}
+        onClick={function () {
+          handleSidebar(true)
+        }}
+        className='ms-3 inline-flex items-center rounded-lg p-2 text-sm  hover:bg-colorPrimary hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 md:hidden'
       >
-        <span className='sr-only'>Open sidebar</span>
-        <svg
-          className='h-6 w-6'
-          aria-hidden='true'
-          fill='currentColor'
-          viewBox='0 0 20 20'
-          xmlns='http://www.w3.org/2000/svg'
-        >
-          <path
-            clipRule='evenodd'
-            fillRule='evenodd'
-            d='M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z'
-          />
-        </svg>
-      </button>
+        <FiMenu className='h-6 w-6' />
+      </Button>
       <aside
-        id='default-sidebar'
-        className='fixed left-0 top-0 z-40 h-screen w-64 -translate-x-full transition-transform md:translate-x-0'
-        aria-label='Sidebar'
+        ref={asideRef}
+        className={`fixed left-0 top-0 z-40 h-screen w-64 -translate-x-full transition-transform md:translate-x-0 ${openSidebar ? 'translate-x-0' : '-translate-x-full'} `}
       >
-        <div className='0 h-full overflow-y-auto bg-primary px-3 py-4 dark:bg-gray-800'>
-          <ul className='space-y-2 font-medium'>
-            <li>
-              <a
-                href='/dashboard-admin'
-                className='group flex items-center rounded-lg p-2 text-textPrimary hover:bg-colorPrimary dark:text-primary'
-              >
-                <span className='ms-3'>Dashboard</span>
-              </a>
-            </li>
-            <li>
-              <a
-                href='/dashboard-admin/history-admin'
-                className='group flex items-center rounded-lg p-2 text-textPrimary hover:bg-colorPrimary dark:text-primary'
-              >
-                <span className='ms-3 flex-1 whitespace-nowrap'>History</span>
-              </a>
-            </li>
-            <li>
-              <a
-                href='/dashboard-admin/settings-admin'
-                className='group flex items-center rounded-lg p-2 text-textPrimary hover:bg-colorPrimary dark:text-primary'
-              >
-                <span className='ms-3 flex-1 whitespace-nowrap'>Settings</span>
-              </a>
-            </li>
-          </ul>
+        <div className=' flex h-full flex-col items-start justify-between overflow-y-auto bg-colorPrimary px-3 py-10 dark:bg-gray-800'>
+          <div>
+            <img src={imagetextIL} alt='Infinite Learning Logo' />
+
+            <ul className='mt-10 w-full space-y-2 font-medium'>
+              {sideBarLinksAdmin.map(function (sidebar: ISideBarLink) {
+                return (
+                  <li key={sidebar.title}>
+                    <NavLink
+                      to={sidebar.routes}
+                      end
+                      className={({ isActive }) =>
+                        `group flex items-center rounded-lg p-2 ${
+                          isActive
+                            ? 'bg-white text-primary dark:bg-colorPrimary'
+                            : 'text-white hover:bg-white hover:text-primary dark:text-primary hover:dark:bg-colorPrimary'
+                        }`
+                      }
+                    >
+                      <sidebar.icon className='h-6 w-6' />
+                      <span className='ms-3'>{sidebar.title}</span>
+                    </NavLink>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+
+          <Button
+            onClick={handleLogOut}
+            variant={'ghost'}
+            className='group flex w-full items-center justify-start rounded-lg p-2 text-white hover:bg-foreground hover:bg-white hover:text-primary  dark:text-primary hover:dark:bg-colorPrimary'
+          >
+            <MdLogout className='h-6 w-6' />
+            <span className='ms-3'>LogOut</span>
+          </Button>
         </div>
       </aside>
     </>

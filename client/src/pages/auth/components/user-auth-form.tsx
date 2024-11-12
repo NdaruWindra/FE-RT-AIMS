@@ -40,9 +40,12 @@ const formSchema = z.object({
 })
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const { isLoading, isAuthenticated, refreshToken } = useAppSelector(
+ 
+  const { isLoading, isAuthenticated, refreshToken, role } = useAppSelector(
     (state) => state.user
+    
   )
+
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
@@ -59,14 +62,22 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   }
 
   // ! INITIAL RENDER
-  useEffect(
-    function () {
-      if (isAuthenticated) {
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (role === 'USER') {
         navigate('/dashboard')
       }
-    },
-    [isAuthenticated]
-  )
+    }
+  }, [isAuthenticated, role, navigate])
+
+  useEffect(() =>{
+    if (isAuthenticated) {
+      if (role === 'admin') {
+        navigate('/dashboard-admin')
+      } 
+    }
+  },[isAuthenticated, role, navigate])
+  
 
   useEffect(
     function () {

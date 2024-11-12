@@ -76,6 +76,7 @@ export const userSlice = createSlice({
         state.id = payload.data.id
         state.email = payload.data.email
         state.username = payload.data.username
+        state.role = payload.data.role
 
         state.message.status = 'Success'
         state.message.text = payload.message
@@ -131,6 +132,8 @@ export const userSlice = createSlice({
         state.id = payload.data.id
         state.email = payload.data.email
         state.username = payload.data.username
+        state.role = payload.data.role
+
 
         state.message.status = 'Success'
         state.message.text = 'Login success'
