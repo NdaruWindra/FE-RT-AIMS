@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { FiMenu } from 'react-icons/fi'
 import { useEffect, useRef, useState } from 'react'
 import { sideBarLinksAdmin } from '@/utils/constant'
@@ -6,13 +6,27 @@ import { ISideBarLink } from '@/utils/type'
 import { Button } from './custom/button'
 import { imagetextIL } from '@/components/assets/images/index'
 import { MdLogout } from 'react-icons/md'
+import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
+import { signout } from '@/features/user/userSlice'
 
 export default function Sidebar() {
   const [openSidebar, setOpenSidebar] = useState<boolean>(false)
   const asideRef = useRef<HTMLDivElement>(null)
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+  const { refreshToken } = useAppSelector(function (store) {
+    return store.user
+  })
 
   function handleSidebar(sidebar: boolean) {
     setOpenSidebar(sidebar)
+  }
+
+  function handleLogOut() {
+    if (refreshToken) {
+      dispatch(signout(refreshToken))
+      navigate('/sign-in')
+    }
   }
 
   useEffect(function () {
@@ -27,7 +41,6 @@ export default function Sidebar() {
 
     // Add event listener
     document.addEventListener('mousedown', handleClickOutside)
-
     // Cleanup listener on unmount
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
@@ -79,6 +92,7 @@ export default function Sidebar() {
           </div>
 
           <Button
+            onClick={handleLogOut}
             variant={'ghost'}
             className='group flex w-full items-center justify-start rounded-lg p-2 text-white hover:bg-foreground hover:bg-white hover:text-primary  dark:text-primary hover:dark:bg-colorPrimary'
           >
