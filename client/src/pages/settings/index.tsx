@@ -8,11 +8,8 @@ import {
   dataFormSettingsSelectLeft,
   dataFormSettingsSelectRight,
 } from '@/utils/constant'
-<<<<<<< HEAD
 import { Button } from '@/components/ui/button'
-=======
 import { useState } from 'react'
->>>>>>> 3d7949ff9438d02d87644d76bf9cf0c8d1c1f0ad
 
 export default function Settings() {
   const { username, email } = useAppSelector((store) => store.user)
@@ -50,27 +47,22 @@ export default function Settings() {
               <IoPersonCircle className='h-16 w-16' />
               <div>
                 <p className='font-medium dark:text-primary'>{username}</p>
-                <p className='text-muted-foreground'>{email || 'user@gmail.com'}</p>
+                <p className='text-muted-foreground'>
+                  {email || 'user@gmail.com'}
+                </p>
               </div>
             </div>
             <div className='space-x-2'>
-<<<<<<< HEAD
-              <Button className='w-28 bg-colorPrimary text-white dark:hover:text-textPrimary'>
-                Change Picture
-              </Button>
-              <Button className='w-28 bg-red-500 text-white dark:hover:text-textPrimary'>
-=======
               <Button
                 className='w-28 bg-colorPrimary text-primary hover:text-textPrimary'
-                disabled={!isEditing} 
+                disabled={!isEditing}
               >
                 Change Picture
               </Button>
               <Button
                 className='w-28 bg-primary text-red-500'
-                disabled={!isEditing} 
+                disabled={!isEditing}
               >
->>>>>>> 3d7949ff9438d02d87644d76bf9cf0c8d1c1f0ad
                 Remove Picture
               </Button>
             </div>
@@ -86,7 +78,7 @@ export default function Settings() {
               name='email'
               label='Email'
               placeholder='Your Email'
-              disabled={!isEditing} 
+              disabled={!isEditing}
             />
             {/* Username Field */}
             <FormSettings
@@ -94,16 +86,9 @@ export default function Settings() {
               name='username'
               label='Username'
               placeholder='Your Username'
-              disabled={!isEditing} 
+              disabled={!isEditing}
             />
           </Form>
-<<<<<<< HEAD
-          <Button className='w-28 bg-colorPrimary text-white dark:hover:text-textPrimary'>
-            Confirm
-          </Button>
-        </section>
-=======
->>>>>>> 3d7949ff9438d02d87644d76bf9cf0c8d1c1f0ad
 
           {/* Edit / Save Button Section */}
           <div className='space-x-2'>
