@@ -78,7 +78,7 @@ export const historySlice = createSlice({
           state.isLoading = false
         }
       )
-      .addCase(getMyHistory.rejected, function (state, action) {
+      .addCase(getMyHistory.rejected, function (state) {
         state.isLoading = false
       })
 
@@ -100,7 +100,7 @@ export const historySlice = createSlice({
           state.isLoading = false
         }
       )
-      .addCase(getAllHistory.rejected, function (state, action) {
+      .addCase(getAllHistory.rejected, function (state) {
         state.isLoading = false
       })
 
