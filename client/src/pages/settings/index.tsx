@@ -1,4 +1,3 @@
-import { Button } from '@/components/custom/button'
 import { Layout } from '@/components/custom/layout'
 import { Form } from '@/components/ui/form'
 import { useForm } from 'react-hook-form'
@@ -9,6 +8,7 @@ import {
   dataFormSettingsSelectLeft,
   dataFormSettingsSelectRight,
 } from '@/utils/constant'
+import { Button } from '@/components/ui/button'
 import { useState } from 'react'
 
 export default function Settings() {
@@ -47,19 +47,21 @@ export default function Settings() {
               <IoPersonCircle className='h-16 w-16' />
               <div>
                 <p className='font-medium dark:text-primary'>{username}</p>
-                <p className='text-muted-foreground'>{email || 'user@gmail.com'}</p>
+                <p className='text-muted-foreground'>
+                  {email || 'user@gmail.com'}
+                </p>
               </div>
             </div>
             <div className='space-x-2'>
               <Button
                 className='w-28 bg-colorPrimary text-primary hover:text-textPrimary'
-                disabled={!isEditing} 
+                disabled={!isEditing}
               >
                 Change Picture
               </Button>
               <Button
                 className='w-28 bg-primary text-red-500'
-                disabled={!isEditing} 
+                disabled={!isEditing}
               >
                 Remove Picture
               </Button>
@@ -76,7 +78,7 @@ export default function Settings() {
               name='email'
               label='Email'
               placeholder='Your Email'
-              disabled={!isEditing} 
+              disabled={!isEditing}
             />
             {/* Username Field */}
             <FormSettings
@@ -84,7 +86,7 @@ export default function Settings() {
               name='username'
               label='Username'
               placeholder='Your Username'
-              disabled={!isEditing} 
+              disabled={!isEditing}
             />
           </Form>
 

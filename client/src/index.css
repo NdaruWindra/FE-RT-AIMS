@@ -149,3 +149,53 @@ input[type='search']::-webkit-search-results-button,
 input[type='search']::-webkit-search-results-decoration {
   display: none;
 }
+
+/* Review Landing Page */
+.scroll-container {
+  overflow: hidden;
+  position: relative;
+}
+
+.scroll-content {
+  display: flex;
+  gap: 1rem;
+  animation: scroll 10s linear infinite;
+}
+
+.review-item {
+  width: 60%;
+  max-width: 300px;
+  flex-shrink: 0;
+  padding: 1.25rem;
+  border-radius: 0.5rem;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+
+/* Custom Scrollbar */
+.scrollbar-custom::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: #8A3DFF; /* Track background color */
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background-color: #F9F9F9; /* Thumb color */
+  border-radius: 10px;
+  border: 2px solid #2c5282; /* Optional border around thumb */
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background-color: #4299e1; /* Thumb hover color */
+}

@@ -5,7 +5,7 @@ import { imageIL } from '@/components/assets/images'
 export default function SignIn() {
   return (
     <>
-      <div className='container flex justify-between md:gap-10'>
+      <div className='container flex justify-between h-screen md:gap-10'>
         {/* Banner */}
         <Banner />
 

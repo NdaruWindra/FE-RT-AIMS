@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { imagetextIL } from '@/components/assets/images'
-import { Button } from '@/components/custom/button'
 import { Link } from 'react-router-dom'
 import {
   Select,
@@ -10,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)

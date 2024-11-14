@@ -1,6 +1,6 @@
 import { type IHistoryState } from '@/utils/type'
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { getMyHistoryThunk, getAllThunk } from './historyThunk'
+import { getMyHistoryThunk, getAllThunk, uploadNewAudioThunk } from './historyThunk'
 
 const initialState: IHistoryState = {
   allHistory: [],
@@ -34,6 +34,10 @@ const initialState: IHistoryState = {
 // BASE FETCH
 export const getMyHistory = createAsyncThunk('getMyHistory', getMyHistoryThunk)
 export const getAllHistory = createAsyncThunk('getAllHistory', getAllThunk)
+export const uploadAudio = createAsyncThunk(
+  'uploadNewAudio',
+  uploadNewAudioThunk
+)
 
 export const historySlice = createSlice({
   name: 'history',
@@ -75,6 +79,20 @@ export const historySlice = createSlice({
       .addCase(getAllHistory.rejected, (state, action) => {
         state.isLoading = false
 
+      })
+
+      //Upload new audio
+      .addCase(uploadAudio.pending, function (state) {
+        state.isLoading = true
+      })
+      .addCase(uploadAudio.fulfilled, function (state, { payload }) {
+        state.result.summary = payload.summary
+        state.result.transcript  = payload.transcript  
+
+        state.isLoading = false
+      })
+      .addCase(uploadAudio.rejected, function (state) {
+        state.isLoading = false
       })
   },
 })

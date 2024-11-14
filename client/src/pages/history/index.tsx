@@ -22,11 +22,11 @@ export default function ProductTable() {
   const history = useAppSelector((state) => state.history)
 
   useEffect(function () {
-    dispatch(getMyHistory(user.accessToken))
+    // dispatch(getMyHistory(user.accessToken))
   }, [])
 
   return (
-    <div className='relative w-full shadow-md sm:rounded-lg'>
+    <div className='relative mt-10 w-full shadow-md sm:rounded-lg'>
       <h1 className='text-2xl font-bold'>My History</h1>
 
       <Separator className='my-4' />
