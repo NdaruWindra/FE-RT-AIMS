@@ -1,6 +1,10 @@
 import { type IHistoryState } from '@/utils/type'
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { getMyHistoryThunk, uploadNewAudioThunk } from './historyThunk'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import {
+  getMyHistoryThunk,
+  getAllThunk,
+  uploadNewAudioThunk,
+} from './historyThunk'
 
 const initialState: IHistoryState = {
   allHistory: [],
@@ -32,7 +36,8 @@ const initialState: IHistoryState = {
 }
 
 // BASE FETCH
-export const getMyHistory = createAsyncThunk('getMyHistroy', getMyHistoryThunk)
+export const getMyHistory = createAsyncThunk('getMyHistory', getMyHistoryThunk)
+export const getAllHistory = createAsyncThunk('getAllHistory', getAllThunk)
 export const uploadAudio = createAsyncThunk(
   'uploadNewAudio',
   uploadNewAudioThunk
@@ -42,8 +47,8 @@ export const historySlice = createSlice({
   name: 'history',
   initialState,
   reducers: {
-    setCurrentPage: function (state, { payload }) {
-      state.paginationHistory.currentPage = payload
+    setCurrentPage: function (state, action: PayloadAction<number>) {
+      state.paginationHistory.currentPage = action.payload
     },
     setResults: function (state, { payload }) {
       state.result.summary = payload.summary
@@ -55,17 +60,47 @@ export const historySlice = createSlice({
   },
   extraReducers(builder) {
     builder
-      //Get My History
+      // Get My History
       .addCase(getMyHistory.pending, function (state) {
         state.isLoading = true
       })
-      .addCase(getMyHistory.fulfilled, function (state, { payload }) {
-        state.allHistory = payload.data
-        state.paginationHistory.totalPage = payload.result
-
+      .addCase(
+        getMyHistory.fulfilled,
+        (
+          state,
+          action: PayloadAction<{
+            data: typeof initialState.allHistory
+            result: number
+          }>
+        ) => {
+          state.allHistory = action.payload.data
+          state.paginationHistory.totalPage = action.payload.result
+          state.isLoading = false
+        }
+      )
+      .addCase(getMyHistory.rejected, function (state, action) {
         state.isLoading = false
       })
-      .addCase(getMyHistory.rejected, function (state) {
+
+      // Get My History
+      .addCase(getAllHistory.pending, function (state) {
+        state.isLoading = true
+      })
+      .addCase(
+        getAllHistory.fulfilled,
+        function (
+          state,
+          action: PayloadAction<{
+            data: typeof initialState.allHistory
+            result: number
+          }>
+        ) {
+          state.allHistory = action.payload.data
+          state.paginationHistory.totalPage = action.payload.result
+          state.isLoading = false
+        }
+      )
+      .addCase(getAllHistory.rejected, function (state, action) {
         state.isLoading = false
       })
 

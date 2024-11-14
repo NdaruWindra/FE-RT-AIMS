@@ -15,6 +15,23 @@ export async function getMyHistoryThunk(token: any, thunkAPI: any) {
   }
 }
 
+export async function getAllThunk(token: any, thunkAPI: any) {
+  try {
+    const response = await customFetch.get('/history', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    return response.data
+  } catch (error: any) {
+    console.log(error)
+    return thunkAPI.rejectWithValue(error.response.data.message)
+  }
+}
+
+
+
 export async function uploadNewAudioThunk(data: any, thunkAPI: any) {
   try {
     const formData = new FormData()

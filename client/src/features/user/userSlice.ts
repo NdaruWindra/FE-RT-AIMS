@@ -1,10 +1,11 @@
 import { type IUserState } from '@/utils/type'
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import {
   refreshThunk,
   signinThunk,
   signoutThunk,
   signupThunk,
+  getAllUserThunk,
 } from './userThunk'
 import {
   getLocalStorage,
@@ -13,6 +14,7 @@ import {
 } from '@/utils/localStorage'
 
 const initialState: IUserState = {
+  allUser: [],
   id: '',
   username: '',
   email: '',
@@ -24,6 +26,11 @@ const initialState: IUserState = {
     text: '',
   },
 
+  paginationUser: {
+    currentPage: 1,
+    totalPage: 10,
+  },
+
   isAuthenticated: false,
   isLoading: false,
 }
@@ -33,6 +40,7 @@ export const signup = createAsyncThunk('signupUser', signupThunk)
 export const signin = createAsyncThunk('signinUser', signinThunk)
 export const signout = createAsyncThunk('signoutUser', signoutThunk)
 export const getRefreshToken = createAsyncThunk('refreshToken', refreshThunk)
+export const getAllUser = createAsyncThunk('getAllUser', getAllUserThunk)
 
 export const userSlice = createSlice({
   name: 'user',
@@ -146,6 +154,25 @@ export const userSlice = createSlice({
         // state.message.text = payload.data.message
 
         state.isLoading = false
+      })
+
+      // Get My History
+      .addCase(getAllUser.pending, (state) => {
+        state.isLoading = true
+
+      })
+      .addCase(getAllUser.fulfilled, (state, action: PayloadAction<{ data: typeof initialState.allUser, result: number }>) => {
+        state.allUser = action.payload.data
+        state.paginationUser.totalPage = action.payload.result
+        state.isLoading = false
+        
+        console.log(action);
+        
+
+      })
+      .addCase(getAllUser.rejected, (state, action) => {
+        state.isLoading = false
+
       })
   },
 })

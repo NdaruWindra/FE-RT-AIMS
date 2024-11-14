@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search } from '@/components/search';
 import {
   Select,
@@ -10,11 +10,15 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { TableHistory } from './components/table';
+
+import { useAppDispatch, useAppSelector } from '@/hooks/use-redux';
+import { getAllUser } from '@/features/user/userSlice';
+import { PaginationHistory } from './components/pagination-history';
 import { Edit } from './components/edit';
 
 export default function ProductTable() {
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [sortOrder, setSortOrder] = useState('')
+  const [sortOrder, setSortOrder] = useState('');
 
   const handleEditClick = () => {
     setIsEditOpen(true);
@@ -24,13 +28,22 @@ export default function ProductTable() {
     setIsEditOpen(false);
   };
 
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.user);
+  const history = useAppSelector((state) => state.history);
+
+  useEffect(() => {
+    dispatch(getAllUser(user.accessToken));
+  }, [dispatch, user.accessToken]);
+
   return (
     <div className='relative w-full shadow-md sm:rounded-lg'>
       <h1 className='text-2xl font-bold'>My History</h1>
+
       <Separator className='my-4' />
 
       <div className='grid grid-cols-2 items-end justify-between'>
-        <Select onValueChange={(value) => setSortOrder(value)}>
+        <Select>
           <SelectTrigger className='w-[180px]'>
             <SelectValue placeholder='Filter By' />
           </SelectTrigger>
@@ -46,12 +59,12 @@ export default function ProductTable() {
 
         <Search />
       </div>
-      
-      {/* TableHistory with both sortOrder and onEdit props */}
-      <TableHistory sortOrder={sortOrder} onEdit={handleEditClick} />
 
-      {/* Render Edit modal if isEditOpen is true */}
+      <TableHistory data={user.allUser} onEdit={handleEditClick} />
+
       {isEditOpen && <Edit onClose={handleCloseEdit} />}
+
+      <PaginationHistory data={history.allHistory} />
     </div>
   );
 }
