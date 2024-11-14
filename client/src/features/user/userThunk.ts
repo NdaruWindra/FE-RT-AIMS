@@ -63,3 +63,18 @@ export async function refreshThunk(accessToken: string, thunkAPI: any) {
     return thunkAPI.rejectWithValue(error.response.data.message)
   }
 }
+
+export async function getAllUserThunk(token: any, thunkAPI: any) {
+  try {
+    const response = await customFetch.get('/user', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    return response.data
+  } catch (error: any) {
+    console.log(error)
+    return thunkAPI.rejectWithValue(error.response.data.message)
+  }
+}

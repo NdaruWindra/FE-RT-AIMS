@@ -1,4 +1,5 @@
-import { Search } from '@/components/search'
+import { useState } from 'react';
+import { Search } from '@/components/search';
 import {
   Select,
   SelectGroup,
@@ -6,33 +7,30 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
-} from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
-import { TableHistory } from './components/table-detail'
-
-import { useEffect } from 'react'
-import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
-import { getAllHistory } from '@/features/history/historySlice'
-import { PaginationHistory } from './components/pagination-history'
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { TableHistory } from './components/table';
+import { Edit } from './components/edit';
 
 export default function ProductTable() {
-  const dispatch = useAppDispatch()
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [sortOrder, setSortOrder] = useState('')
 
-  const user = useAppSelector((state) => state.user)
-  const history = useAppSelector((state) => state.history)
+  const handleEditClick = () => {
+    setIsEditOpen(true);
+  };
 
-  useEffect(function () {
-    dispatch(getAllHistory(user.accessToken))
-  }, [])
+  const handleCloseEdit = () => {
+    setIsEditOpen(false);
+  };
 
   return (
     <div className='relative w-full shadow-md sm:rounded-lg'>
       <h1 className='text-2xl font-bold'>My History</h1>
-
       <Separator className='my-4' />
 
       <div className='grid grid-cols-2 items-end justify-between'>
-        <Select>
+        <Select onValueChange={(value) => setSortOrder(value)}>
           <SelectTrigger className='w-[180px]'>
             <SelectValue placeholder='Filter By' />
           </SelectTrigger>
@@ -48,10 +46,12 @@ export default function ProductTable() {
 
         <Search />
       </div>
+      
+      {/* TableHistory with both sortOrder and onEdit props */}
+      {/* <TableHistory sortOrder={sortOrder} onEdit={handleEditClick} /> */}
 
-      <TableHistory data={history.allHistory} />
-
-      <PaginationHistory data={history.allHistory} />
+      {/* Render Edit modal if isEditOpen is true */}
+      {isEditOpen && <Edit onClose={handleCloseEdit} />}
     </div>
-  )
+  );
 }
