@@ -180,18 +180,17 @@ input[type='search']::-webkit-search-results-decoration {
   }
 }
 
-
 /* Custom Scrollbar */
 .scrollbar-custom::-webkit-scrollbar {
   width: 8px;
 }
 
 .scrollbar-custom::-webkit-scrollbar-track {
-  background: #8A3DFF; /* Track background color */
+  background: #8a3dff; /* Track background color */
 }
 
 .scrollbar-custom::-webkit-scrollbar-thumb {
-  background-color: #F9F9F9; /* Thumb color */
+  background-color: #f9f9f9; /* Thumb color */
   border-radius: 10px;
   border: 2px solid #2c5282; /* Optional border around thumb */
 }

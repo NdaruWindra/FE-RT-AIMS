@@ -17,8 +17,6 @@ export async function getMyHistoryThunk(token: any, thunkAPI: any) {
 
 export async function uploadNewAudioThunk(data: any, thunkAPI: any) {
   try {
-    console.log(data)
-
     const formData = new FormData()
     formData.append('file', data)
 

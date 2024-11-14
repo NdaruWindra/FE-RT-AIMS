@@ -42,8 +42,15 @@ export const historySlice = createSlice({
   name: 'history',
   initialState,
   reducers: {
-    setCurrentPage: (state, { payload }) => {
+    setCurrentPage: function (state, { payload }) {
       state.paginationHistory.currentPage = payload
+    },
+    setResults: function (state, { payload }) {
+      state.result.summary = payload.summary
+      state.result.transcript = payload.transcript
+    },
+    setIsLoading: function (state, { payload }) {
+      state.isLoading = payload
     },
   },
   extraReducers(builder) {
@@ -68,7 +75,7 @@ export const historySlice = createSlice({
       })
       .addCase(uploadAudio.fulfilled, function (state, { payload }) {
         state.result.summary = payload.summary
-        state.result.transcript  = payload.transcript  
+        state.result.transcript = payload.transcript
 
         state.isLoading = false
       })
@@ -78,6 +85,6 @@ export const historySlice = createSlice({
   },
 })
 
-export const { setCurrentPage } = historySlice.actions
+export const { setCurrentPage, setResults, setIsLoading } = historySlice.actions
 
 export default historySlice.reducer
