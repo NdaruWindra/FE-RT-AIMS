@@ -34,10 +34,7 @@ export function TableHistory({ data }: { data: TSingleHistory[] }) {
         </TableHeader>
         <TableBody>
           {data?.map(function (history: TSingleHistory) {
-            console.log(history);
             return (
-              
-              
               <TableRow
                 key={history.id_history}
                 className='h-14 hover:cursor-pointer'

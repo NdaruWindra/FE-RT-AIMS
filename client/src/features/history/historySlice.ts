@@ -4,7 +4,9 @@ import {
   getMyHistoryThunk,
   getAllThunk,
   uploadNewAudioThunk,
+  createNewHistoryThunk,
 } from './historyThunk'
+import { toast } from '@/components/ui/use-toast'
 
 const initialState: IHistoryState = {
   allHistory: [],
@@ -24,7 +26,7 @@ const initialState: IHistoryState = {
 
   result: {
     id_result: '',
-    transcript: '',
+    transcript: [],
     summary: '',
   },
 
@@ -42,6 +44,11 @@ export const getAllHistory = createAsyncThunk('getAllHistory', getAllThunk)
 export const uploadAudio = createAsyncThunk(
   'uploadNewAudio',
   uploadNewAudioThunk
+)
+
+export const createNewHistory = createAsyncThunk(
+  'createNewHistory',
+  createNewHistoryThunk
 )
 
 export const historySlice = createSlice({
@@ -111,13 +118,34 @@ export const historySlice = createSlice({
       })
       .addCase(uploadAudio.fulfilled, function (state, { payload }) {
         state.result.summary = payload.summary
-        state.result.transcript = payload.transcript
+        state.result.transcript = payload.transcript.segments
 
         state.isLoading = false
       })
       .addCase(uploadAudio.rejected, function (state) {
         state.isLoading = false
       })
+
+      //Create New History
+      .addCase(createNewHistory.pending, function (state) {
+        state.isLoading = true
+      })
+      .addCase(createNewHistory.fulfilled, function (state, { payload }) {
+        state.isLoading = false
+
+        toast({ title: 'Success', description: payload.message })
+      })
+      .addCase(
+        createNewHistory.rejected,
+        function (state, { payload }: { payload: any }) {
+          toast({
+            title: 'Error',
+            description: payload,
+            variant: 'destructive',
+          })
+          state.isLoading = false
+        }
+      )
   },
 })
 
