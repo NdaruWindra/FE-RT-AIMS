@@ -6,6 +6,7 @@ import {
   signoutThunk,
   signupThunk,
   getAllUserThunk,
+  updateThunk,
 } from './userThunk'
 import {
   getLocalStorage,
@@ -41,6 +42,9 @@ export const signin = createAsyncThunk('signinUser', signinThunk)
 export const signout = createAsyncThunk('signoutUser', signoutThunk)
 export const getRefreshToken = createAsyncThunk('refreshToken', refreshThunk)
 export const getAllUser = createAsyncThunk('getAllUser', getAllUserThunk)
+export const updateUser = createAsyncThunk('updateUser', updateThunk)
+
+
 
 export const userSlice = createSlice({
   name: 'user',
@@ -156,7 +160,7 @@ export const userSlice = createSlice({
         state.isLoading = false
       })
 
-      // Get My History
+      // Get All User
       .addCase(getAllUser.pending, (state) => {
         state.isLoading = true
 
@@ -174,6 +178,22 @@ export const userSlice = createSlice({
         state.isLoading = false
 
       })
+
+      //! 5. Update User
+      .addCase(updateUser.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
+      
+        // Perbarui data user di state
+        if (payload.data) {
+          state.username = payload.data.username || state.username;
+          state.email = payload.data.email || state.email; // Update email dengan targetEmail
+        }
+      
+        state.message.status = 'Success';
+        state.message.text = payload.message || 'User updated successfully';
+      })
+      
+      
   },
 })
 

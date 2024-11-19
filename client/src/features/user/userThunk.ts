@@ -78,3 +78,26 @@ export async function getAllUserThunk(token: any, thunkAPI: any) {
     return thunkAPI.rejectWithValue(error.response.data.message)
   }
 }
+
+export async function updateThunk(arg: { accessToken: string; data: any }, thunkAPI: any) {
+  try {
+    const { accessToken, data } = arg;
+    const response = await customFetch.patch(
+      '/user/update-user',
+      {
+        username: data.username, // Gunakan field username
+        email: data.email, // Gunakan field username
+        targetEmail: data.targetEmail, // Gunakan targetEmail untuk email tujuan
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(error.response.data.message);
+  }
+}

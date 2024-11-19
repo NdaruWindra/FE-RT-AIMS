@@ -8,14 +8,33 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { TSingleUser } from '@/utils/type';
+import { useNavigate } from 'react-router-dom';
 
 interface TableHistoryProps {
   data: TSingleUser[];
-  onEdit: () => void;
+  onEdit: (user: { username: string; email: string }) => void;
+  sortOrder: string;
 }
 
-export function TableHistory({ data, onEdit }: TableHistoryProps) {
-  if (data.length === 0) {
+export function TableHistory({ data, onEdit, sortOrder }: TableHistoryProps) {
+  const navigate = useNavigate();
+
+  const handleNameClick = (username: string) => {
+    navigate(`/dashboard-admin/history-detail-admin`, { state: { username } });
+  };
+
+  // Sorting the data based on sortOrder
+  const sortedData = [...data].sort((a, b) => {
+    if (sortOrder === 'a-z') {
+      return a.username.localeCompare(b.username);
+    }
+    if (sortOrder === 'z-a') {
+      return b.username.localeCompare(a.username);
+    }
+    return 0;
+  });
+
+  if (sortedData.length === 0) {
     return (
       <div className='mt-5'>
         <h1>History is empty</h1>
@@ -25,7 +44,7 @@ export function TableHistory({ data, onEdit }: TableHistoryProps) {
 
   return (
     <div className='mt-5 overflow-hidden rounded-2xl border border-gray-300'>
-      <Table className='w-full '>
+      <Table className='w-full'>
         <TableHeader className='bg-gray-700'>
           <TableRow>
             <TableHead className='px-4 py-2'>
@@ -38,16 +57,26 @@ export function TableHistory({ data, onEdit }: TableHistoryProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((user) => (
+          {sortedData.map((user) => (
             <TableRow key={user.id} className='h-14 hover:cursor-pointer'>
               <TableCell className='px-4 py-2'>
                 <Checkbox />
               </TableCell>
-              <TableCell className='px-4 py-2 font-medium'>{user.username}</TableCell>
-              <TableCell className='px-4 py-2 text-center'>{user.history?.length}</TableCell>
+              <TableCell
+                className='px-4 py-2 font-medium text-blue-600 hover:underline cursor-pointer'
+                onClick={() => handleNameClick(user.username)}
+              >
+                {user.username}
+              </TableCell>
+              <TableCell className='px-4 py-2 text-center'>
+                {user.history?.length}
+              </TableCell>
               <TableCell className='px-4 py-2'>{user.email}</TableCell>
               <TableCell className='space-x-2 px-4 py-2 text-right'>
-                <button onClick={onEdit} className='text-blue-600 hover:underline'>
+                <button
+                  onClick={() => onEdit({ username: user.username, email: user.email })}
+                  className='text-blue-600 hover:underline'
+                >
                   Edit
                 </button>
                 <a href='#' className='text-red-600 hover:underline'>

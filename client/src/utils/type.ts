@@ -5,7 +5,7 @@ export type TSingleHistory = {
   title: string
   createdAt: string
   fileName: string
-  date?: string
+  date: string
 }
 
 export type TSingleUser = {
@@ -13,7 +13,7 @@ export type TSingleUser = {
   username: string
   email: string
   history?: string
-  date?: string
+  date: string
 }
 
 export type TSingleResult = {

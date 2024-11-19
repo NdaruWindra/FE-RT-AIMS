@@ -18,23 +18,34 @@ import { Edit } from './components/edit';
 
 export default function ProductTable() {
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editingData, setEditingData] = useState<{ username: string; email: string } | null>(null);
   const [sortOrder, setSortOrder] = useState('');
-
-  const handleEditClick = () => {
-    setIsEditOpen(true);
-  };
-
-  const handleCloseEdit = () => {
-    setIsEditOpen(false);
-  };
 
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user);
   const history = useAppSelector((state) => state.history);
 
+  // Mengambil data pengguna saat komponen dimuat
   useEffect(() => {
     dispatch(getAllUser(user.accessToken));
   }, [dispatch, user.accessToken]);
+
+  // Mengatur urutan sort
+  const handleSortChange = (value: string) => {
+    setSortOrder(value);
+  };
+
+  // Mengatur data pengguna yang akan diedit dan membuka modal
+  const handleEditClick = (data: { username: string; email: string }) => {
+    setEditingData(data);
+    setIsEditOpen(true);
+  };
+
+  // Menutup modal edit
+  const handleCloseEdit = () => {
+    setIsEditOpen(false);
+    setEditingData(null);
+  };
 
   return (
     <div className='relative w-full shadow-md sm:rounded-lg'>
@@ -43,7 +54,7 @@ export default function ProductTable() {
       <Separator className='my-4' />
 
       <div className='grid grid-cols-2 items-end justify-between'>
-        <Select>
+        <Select onValueChange={handleSortChange}>
           <SelectTrigger className='w-[180px]'>
             <SelectValue placeholder='Filter By' />
           </SelectTrigger>
@@ -51,8 +62,6 @@ export default function ProductTable() {
             <SelectGroup>
               <SelectItem value='a-z'>A-Z</SelectItem>
               <SelectItem value='z-a'>Z-A</SelectItem>
-              <SelectItem value='newest'>Date (Newest)</SelectItem>
-              <SelectItem value='latest'>Date (Latest)</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -60,10 +69,15 @@ export default function ProductTable() {
         <Search />
       </div>
 
-      <TableHistory data={user.allUser} onEdit={handleEditClick} />
+      {/* Tabel pengguna */}
+      <TableHistory data={user.allUser} onEdit={handleEditClick} sortOrder={sortOrder} />
 
-      {isEditOpen && <Edit onClose={handleCloseEdit} />}
+      {/* Modal Edit */}
+      {isEditOpen && editingData && (
+        <Edit onClose={handleCloseEdit} initialData={editingData} />
+      )}
 
+      {/* Pagination */}
       <PaginationHistory data={history.allHistory} />
     </div>
   );

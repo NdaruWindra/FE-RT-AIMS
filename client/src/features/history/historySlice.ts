@@ -19,6 +19,7 @@ const initialState: IHistoryState = {
     fileName: '',
     title: '',
     createdAt: '',
+    date: ''
   },
 
   result: {
