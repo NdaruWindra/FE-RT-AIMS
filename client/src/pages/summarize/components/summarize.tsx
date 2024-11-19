@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { FaMicrophone, FaSquare, FaSpinner } from 'react-icons/fa6'
-import { setResults } from '@/features/history/historySlice'
+import { createNewHistory, setResults } from '@/features/history/historySlice'
 import { IoMdDownload } from 'react-icons/io'
 import { GrPowerReset } from 'react-icons/gr'
 import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
-import { setIsLoading, uploadAudio } from '@/features/history/historySlice'
+import { uploadAudio } from '@/features/history/historySlice'
 import { Button } from '@/components/ui/button'
-import { PiUploadBold } from 'react-icons/pi'
 
 export function Summarize() {
   const [isRecording, setIsRecording] = useState(false)
@@ -16,6 +15,7 @@ export function Summarize() {
   const audioChunksRef = useRef<Blob[]>([])
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const history = useAppSelector((state) => state.history)
+  const user = useAppSelector((state) => state.user)
 
   const dispatch = useAppDispatch()
 
@@ -75,10 +75,31 @@ export function Summarize() {
     setAudioUrl(null)
   }
 
-  function handleSummarize(e: any) {
-    e.preventDefault()
-    if (file) {
-      dispatch(uploadAudio(file)).finally(() => dispatch(setIsLoading(false)))
+  async function handleSummarize(e: any) {
+    try {
+      e.preventDefault()
+
+      if (file) {
+        const audioResult = await dispatch(uploadAudio(file)).unwrap()
+
+        if (!audioResult || !audioResult.transcript || !audioResult.summary) {
+          throw new Error('Failed to process audio file')
+        }
+        const transcripts = audioResult.transcript.segments
+          ?.map((data: any) => data['text'].trim())
+          .join('')
+
+        await dispatch(
+          createNewHistory({
+            token: user?.accessToken,
+            summary: audioResult?.summary,
+            transcript: transcripts,
+            title: `${Date.now()}${file.name}`,
+          })
+        ).unwrap()
+      }
+    } catch (error) {
+      throw error
     }
   }
 
@@ -104,16 +125,6 @@ export function Summarize() {
               onClick: isRecording ? handleStopRecording : handleStartRecording,
               className: `rounded-full p-5 ${isRecording ? 'bg-red-600 hover:bg-red-700' : 'dark:bg-colorPrimary dark:hover:bg-colorPrimary-dark'}`,
               content: isRecording ? <FaSquare /> : <FaMicrophone />,
-              disabled: history.isLoading,
-            },
-            {
-              className:
-                'bg-colorPrimary text-white font-semibold hover:bg-colorPrimary-dark md:hidden',
-              content: (
-                <>
-                  <PiUploadBold /> Upload File
-                </>
-              ),
               disabled: history.isLoading,
             },
           ].map(function renderButton(buttonData, index) {
@@ -167,6 +178,7 @@ export function Summarize() {
               </div>
               <Button
                 onClick={handleSummarize}
+                disabled={history.isLoading}
                 className='bg-blue-500 font-semibold text-white hover:bg-blue-600'
               >
                 Summarize
@@ -186,22 +198,29 @@ export function Summarize() {
                 Process Summarize...
               </p>
             </div>
-          ) : history.result?.transcript && history.result?.summary ? (
+          ) : history.result?.summary ? (
             <div className='scrollbar-custom max-h-[400px] space-y-4 overflow-y-auto p-2'>
               <div>
                 <h2 className='text-lg font-semibold text-colorPrimary'>
                   Transcript:
                 </h2>
-                <p className='text-justify text-lg text-white dark:text-colorSecondary'>
-                  {history.result.transcript}
-                </p>
+                {history.result?.transcript.map(function (data: any, index) {
+                  return (
+                    <p
+                      key={index}
+                      className='text-justify text-lg text-white dark:text-colorSecondary'
+                    >
+                      - {data?.text}
+                    </p>
+                  )
+                })}
               </div>
               <div>
                 <h2 className='text-lg font-semibold text-colorPrimary'>
                   Summary:
                 </h2>
                 <p className='text-justify text-lg text-white dark:text-colorSecondary'>
-                  {history.result.summary}
+                  {history.result?.summary}
                 </p>
               </div>
               <Button

@@ -1,5 +1,10 @@
-import { uploadAudio } from '@/features/history/historySlice'
-import { useAppDispatch } from '@/hooks/use-redux'
+import { toast } from '@/components/ui/use-toast'
+import {
+  createNewHistory,
+  setIsLoading,
+  uploadAudio,
+} from '@/features/history/historySlice'
+import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
 import React, { useState } from 'react'
 import { IoClose } from 'react-icons/io5'
 import { RiFolderUploadFill } from 'react-icons/ri'
@@ -11,7 +16,9 @@ interface UploadProps {
 export function Upload({ onClose }: UploadProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [file, setFile] = useState<File | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+
+  const user = useAppSelector((state) => state.user)
+  const history = useAppSelector((state) => state.history)
 
   const dispatch = useAppDispatch()
 
@@ -38,16 +45,33 @@ export function Upload({ onClose }: UploadProps) {
     setFile(selectedFile)
   }
 
-
-  function handleOnSubmit(e: any) {
+  async function handleOnSubmit(e: any) {
     e.preventDefault()
     if (file) {
       onClose()
-      setIsLoading(true)
-      dispatch(uploadAudio(file)).finally(() => {
-        setIsLoading(false)
-      })
+      const audioResult = await dispatch(uploadAudio(file)).unwrap()
+
+      if (!audioResult || !audioResult.transcript || !audioResult.summary) {
+        throw new Error('Failed to process audio file')
+      }
+
+      const transcripts = audioResult.transcript.segments
+        ?.map((data: any) => data['text'].trim())
+        .join('')
+
+      const historyResult = await dispatch(
+        createNewHistory({
+          token: user?.accessToken,
+          summary: audioResult.summary,
+          transcript: transcripts,
+          title: `${Date.now()}${file.name}`,
+        })
+      ).unwrap()
+
+      toast({ description: historyResult.message, title: historyResult.status })
     }
+
+    dispatch(setIsLoading(false))
   }
 
   return (
@@ -110,7 +134,7 @@ export function Upload({ onClose }: UploadProps) {
             type='submit'
             className='mt-4 rounded bg-colorPrimary px-3 py-1 text-xs text-white hover:border hover:border-colorPrimary hover:bg-primary hover:text-colorPrimary md:mt-6 md:px-4 md:py-2 md:text-base'
           >
-            {isLoading ? 'Uploading...' : 'Upload'}
+            {history.isLoading ? 'Uploading...' : 'Upload'}
           </button>
         </div>
       </form>

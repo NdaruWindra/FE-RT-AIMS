@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
-import { getRefreshToken, signin } from '@/features/user/userSlice'
+import { getRefreshTokenSlice, signin } from '@/features/user/userSlice'
 
 interface UserAuthFormProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -40,10 +40,8 @@ const formSchema = z.object({
 })
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
- 
-  const { isLoading, isAuthenticated, refreshToken, role } = useAppSelector(
+  const { isLoading, isAuthenticated, refreshToken } = useAppSelector(
     (state) => state.user
-    
   )
 
   const dispatch = useAppDispatch()
@@ -57,41 +55,38 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    dispatch(signin(data))
+  async function initialRender() {
+    if (refreshToken) {
+      const result = await dispatch(getRefreshTokenSlice(refreshToken))
+
+      if (result.payload.status === 'success') {
+        if (result.payload.data.role?.toLowerCase() === 'user')
+          return navigate('/dashboard')
+        if (result.payload.data.role?.toLowerCase() === 'admin')
+          return navigate('/dashboard-admin')
+      }
+    }
+  }
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const result = await dispatch(signin(values))
+
+    if (result.payload.status === 'success') {
+      return navigate('/dashboard')
+    }
   }
 
   // ! INITIAL RENDER
-  useEffect(() => {
-    if (isAuthenticated) {
-      if (role === 'USER') {
-        navigate('/dashboard')
-      }
+  useEffect(function () {
+    if (!isAuthenticated && refreshToken) {
+      initialRender()
     }
-  }, [isAuthenticated, role, navigate])
-
-  useEffect(() =>{
-    if (isAuthenticated) {
-      if (role === 'admin') {
-        navigate('/dashboard-admin')
-      } 
-    }
-  },[isAuthenticated, role, navigate])
-  
-
-  useEffect(
-    function () {
-      if (refreshToken && !isAuthenticated) {
-        dispatch(getRefreshToken(refreshToken))
-      }
-    },
-    [refreshToken]
-  )
+  }, [])
 
   return (
     <div className={cn('grid gap-6', className)} {...props}>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
           <div className='grid gap-2 space-y-3'>
             {/* Input Email*/}
             <FormField
@@ -145,56 +140,57 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
             {/* Button SignIn */}
             <Button
+              type='submit'
               className='bg-colorPrimary text-primary hover:text-textPrimary'
               loading={isLoading}
             >
               Sign In
             </Button>
-
-            <div className='relative'>
-              <div className='absolute inset-0 flex items-center'>
-                <span className='w-full border-t' />
-              </div>
-              <div className='relative flex justify-center text-xs'>
-                <span className='bg-foreground px-2 text-muted-foreground'>
-                  Or login with
-                </span>
-              </div>
-            </div>
-
-            <div className='flex items-center gap-2'>
-              {/* Google */}
-              <Button
-                className='w-full border hover:border-transparent hover:bg-colorPrimary'
-                type='button'
-                leftSection={<FcGoogle className='h-4 w-4' />}
-              >
-                Google
-              </Button>
-
-              {/* Apple */}
-              <Button
-                className='w-full border hover:border-transparent hover:bg-colorPrimary'
-                type='button'
-                leftSection={<FaApple className='h-4 w-4' />}
-              >
-                Apple
-              </Button>
-            </div>
-
-            {/* to Register */}
-            <div className='flex justify-center space-x-2'>
-              <p className='text-muted-foreground'>Don't have an account?</p>
-              <Link
-                to={'/sign-up'}
-                className='font-medium text-textPrimary underline'
-              >
-                Register
-              </Link>
-            </div>
           </div>
         </form>
       </Form>
+
+      <div className='relative'>
+        <div className='absolute inset-0 flex items-center'>
+          <span className='w-full border-t' />
+        </div>
+        <div className='relative flex justify-center text-xs'>
+          <span className='bg-foreground px-2 text-muted-foreground'>
+            Or login with
+          </span>
+        </div>
+      </div>
+
+      <div className='flex items-center gap-2'>
+        {/* Google */}
+        <Button
+          className='w-full border hover:border-transparent hover:bg-colorPrimary'
+          type='button'
+          leftSection={<FcGoogle className='h-4 w-4' />}
+        >
+          Google
+        </Button>
+
+        {/* Apple */}
+        <Button
+          className='w-full border hover:border-transparent hover:bg-colorPrimary'
+          type='button'
+          leftSection={<FaApple className='h-4 w-4' />}
+        >
+          Apple
+        </Button>
+      </div>
+
+      {/* to Register */}
+      <div className='flex justify-center space-x-2'>
+        <p className='text-muted-foreground'>Don't have an account?</p>
+        <Link
+          to={'/sign-up'}
+          className='font-medium text-textPrimary underline'
+        >
+          Register
+        </Link>
+      </div>
     </div>
   )
 }

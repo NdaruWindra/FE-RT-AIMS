@@ -18,8 +18,7 @@ import { Button } from '@/components/custom/button'
 import { PasswordInput } from '@/components/custom/password-input'
 import { cn } from '@/lib/utils'
 import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
-import { signup } from '@/features/user/userSlice'
-import { toast } from '@/components/ui/use-toast'
+import { getRefreshTokenSlice, signup } from '@/features/user/userSlice'
 
 interface SignUpFormProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -40,11 +39,12 @@ const formSchema = z.object({
 })
 
 export function SignUpForm({ className, ...props }: SignUpFormProps) {
-  const { isLoading, isAuthenticated, message } = useAppSelector(
+  const { isLoading, isAuthenticated, refreshToken } = useAppSelector(
     function (state) {
       return state.user
     }
   )
+
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
@@ -57,24 +57,33 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    dispatch(signup(data))
+  async function initialRender() {
+    if (refreshToken) {
+      const result = await dispatch(getRefreshTokenSlice(refreshToken))
 
-    toast({ title: message.status, description: message.text })
-    if (message.status === 'Success') {
-      navigate('/sign-in')
+      if (result.payload.status === 'success') {
+        if (result.payload.data.role?.toLowerCase() === 'user')
+          return navigate('/dashboard')
+        if (result.payload.data.role?.toLowerCase() === 'admin')
+          return navigate('/dashboard-admin')
+      }
+    }
+  }
+
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    const result = await dispatch(signup(data))
+
+    if (result.payload.status === 'success') {
+      return navigate('/sign-in')
     }
   }
 
   // ! INITIAL RENDER
-  useEffect(
-    function () {
-      if (isAuthenticated) {
-        navigate('/dashboard')
-      }
-    },
-    [isAuthenticated]
-  )
+  useEffect(function () {
+    if (!isAuthenticated && refreshToken) {
+      initialRender()
+    }
+  }, [])
 
   return (
     <div className={cn('grid gap-6', className)} {...props}>

@@ -6,9 +6,9 @@ export function ProtectedRoutes({ children }: { children: ReactNode }) {
   const user = useAppSelector((state) => state.user)
   let location = useLocation()
 
-  // if (!user.isAuthenticated) {
-  //   return <Navigate to='/sign-in' state={{ from: location }} replace />
-  // }
+  if (!user.isAuthenticated) {
+    return <Navigate to='/sign-in' state={{ from: location }} replace />
+  }
 
   return children
 }

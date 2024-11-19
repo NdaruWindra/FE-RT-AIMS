@@ -22,9 +22,7 @@ const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 const AppShell = () => {
   const [isCollapsed] = useIsCollapsed()
   const location = useLocation()
-  const { message,role } = useAppSelector((store) => store.user)
-
-  
+  const { message } = useAppSelector((store) => store.user)
 
   function generateBreadcrumbs(): React.ReactNode[] {
     const paths = location.pathname.split('/').filter((path) => path)
@@ -56,16 +54,6 @@ const AppShell = () => {
       return acc.concat(curr)
     }, [])
   }
-
-  useEffect(() => {
-    if (message.status) {
-      toast({
-        title: message.status,
-        description: message.text,
-        variant: message.status === 'Error' ? 'destructive' : 'default',
-      })
-    }
-  }, [message])
 
   return (
     <ProtectedRoutes>

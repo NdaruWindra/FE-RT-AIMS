@@ -22,7 +22,7 @@ export default function ProductTable() {
   const history = useAppSelector((state) => state.history)
 
   useEffect(function () {
-    // dispatch(getMyHistory(user.accessToken))
+    dispatch(getMyHistory(user.accessToken))
   }, [])
 
   return (

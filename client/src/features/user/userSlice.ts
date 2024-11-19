@@ -12,6 +12,7 @@ import {
   removeLocalStorage,
   setLocalStorage,
 } from '@/utils/localStorage'
+import { toast } from '@/components/ui/use-toast'
 
 const initialState: IUserState = {
   allUser: [],
@@ -39,7 +40,10 @@ const initialState: IUserState = {
 export const signup = createAsyncThunk('signupUser', signupThunk)
 export const signin = createAsyncThunk('signinUser', signinThunk)
 export const signout = createAsyncThunk('signoutUser', signoutThunk)
-export const getRefreshToken = createAsyncThunk('refreshToken', refreshThunk)
+export const getRefreshTokenSlice = createAsyncThunk(
+  'refreshToken',
+  refreshThunk
+)
 export const getAllUser = createAsyncThunk('getAllUser', getAllUserThunk)
 
 export const userSlice = createSlice({
@@ -59,16 +63,21 @@ export const userSlice = createSlice({
       .addCase(signup.fulfilled, function (state, { payload }) {
         state.isLoading = false
 
-        state.message.status = 'Success'
-        state.message.text = payload.message
+        toast({
+          title: 'Success',
+          description: payload.message,
+        })
       })
       .addCase(
         signup.rejected,
         function (state, { payload }: { payload: any }) {
           state.isLoading = false
 
-          state.message.status = 'Error'
-          state.message.text = payload
+          toast({
+            title: 'Error',
+            description: payload,
+            variant: 'destructive',
+          })
         }
       )
 
@@ -86,8 +95,10 @@ export const userSlice = createSlice({
         state.username = payload.data.username
         state.role = payload.data.role
 
-        state.message.status = 'Success'
-        state.message.text = payload.message
+        toast({
+          title: 'Success',
+          description: payload.message,
+        })
 
         state.isAuthenticated = true
         state.isLoading = false
@@ -95,10 +106,12 @@ export const userSlice = createSlice({
       .addCase(
         signin.rejected,
         function (state, { payload }: { payload: any }) {
+          toast({
+            title: 'Error',
+            description: payload,
+            variant: 'destructive',
+          })
           state.isLoading = false
-
-          state.message.status = 'Error'
-          state.message.text = payload.data.message
         }
       )
 
@@ -114,27 +127,28 @@ export const userSlice = createSlice({
 
         removeLocalStorage('refreshToken')
 
-        state.message.status = 'Success'
-        state.message.text = payload.message
-
+        toast({ title: 'Success', description: payload.message })
         state.isAuthenticated = false
         state.isLoading = false
       })
       .addCase(
         signout.rejected,
         function (state, { payload }: { payload: any }) {
-          state.message.status = 'Error'
-          state.message.text = payload.data.message
+          toast({
+            title: 'Error',
+            description: payload,
+            variant: 'destructive',
+          })
 
           state.isLoading = false
         }
       )
 
       //! 4. Refresh Token
-      .addCase(getRefreshToken.pending, function (state) {
+      .addCase(getRefreshTokenSlice.pending, function (state) {
         state.isLoading = true
       })
-      .addCase(getRefreshToken.fulfilled, function (state, { payload }) {
+      .addCase(getRefreshTokenSlice.fulfilled, function (state, { payload }) {
         state.accessToken = payload.data.accessToken
 
         state.id = payload.data.id
@@ -142,37 +156,33 @@ export const userSlice = createSlice({
         state.username = payload.data.username
         state.role = payload.data.role
 
-
-        state.message.status = 'Success'
-        state.message.text = 'Login success'
-
         state.isAuthenticated = true
         state.isLoading = false
       })
-      .addCase(getRefreshToken.rejected, function (state) {
-        // state.message.status = 'Error'
-        // state.message.text = payload.data.message
-
+      .addCase(getRefreshTokenSlice.rejected, function (state) {
         state.isLoading = false
       })
 
-      // Get My History
+      //! 5. Get My History
       .addCase(getAllUser.pending, (state) => {
         state.isLoading = true
-
       })
-      .addCase(getAllUser.fulfilled, (state, action: PayloadAction<{ data: typeof initialState.allUser, result: number }>) => {
-        state.allUser = action.payload.data
-        state.paginationUser.totalPage = action.payload.result
+      .addCase(
+        getAllUser.fulfilled,
+        (
+          state,
+          action: PayloadAction<{
+            data: typeof initialState.allUser
+            result: number
+          }>
+        ) => {
+          state.allUser = action.payload.data
+          state.paginationUser.totalPage = action.payload.result
+          state.isLoading = false
+        }
+      )
+      .addCase(getAllUser.rejected, (state) => {
         state.isLoading = false
-        
-        console.log(action);
-        
-
-      })
-      .addCase(getAllUser.rejected, (state, action) => {
-        state.isLoading = false
-
       })
   },
 })

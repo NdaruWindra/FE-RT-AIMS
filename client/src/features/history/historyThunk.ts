@@ -30,8 +30,6 @@ export async function getAllThunk(token: any, thunkAPI: any) {
   }
 }
 
-
-
 export async function uploadNewAudioThunk(data: any, thunkAPI: any) {
   try {
     const formData = new FormData()
@@ -43,7 +41,29 @@ export async function uploadNewAudioThunk(data: any, thunkAPI: any) {
       },
     })
 
-    console.log(response)
+    return response.data
+  } catch (error: any) {
+    console.log(error)
+    return thunkAPI.rejectWithValue(error.response.data.message)
+  }
+}
+
+export async function createNewHistoryThunk(data: any, thunkAPI: any) {
+  try {
+    const response = await customFetch.post(
+      '/result',
+      {
+        transcript: data?.transcript,
+        summary: data?.summary,
+        title: data?.title,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${data.token}`,
+        },
+      }
+    )
+
     return response.data
   } catch (error: any) {
     console.log(error)
