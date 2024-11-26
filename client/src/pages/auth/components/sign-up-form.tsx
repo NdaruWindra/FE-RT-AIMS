@@ -17,8 +17,11 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/custom/button'
 import { PasswordInput } from '@/components/custom/password-input'
 import { cn } from '@/lib/utils'
-import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
-import { getRefreshTokenSlice, signup } from '@/features/user/userSlice'
+import { useAppSelector } from '@/hooks/use-redux'
+import {
+  useFetchRefreshTokenMutation,
+  useFetchSignUpMutation,
+} from '@/features/user/userThunk'
 
 interface SignUpFormProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -44,8 +47,9 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
       return state.user
     }
   )
+  const [fetchRefreshToken] = useFetchRefreshTokenMutation()
+  const [fetchSignUp] = useFetchSignUpMutation()
 
-  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -59,23 +63,21 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
 
   async function initialRender() {
     if (refreshToken) {
-      const result = await dispatch(getRefreshTokenSlice(refreshToken))
+      const result = await fetchRefreshToken(refreshToken).unwrap()
 
-      if (result.payload.status === 'success') {
-        if (result.payload.data.role?.toLowerCase() === 'user')
+      if (result.status === 'success') {
+        if (result.data.role?.toLowerCase() === 'user')
           return navigate('/dashboard')
-        if (result.payload.data.role?.toLowerCase() === 'admin')
+        if (result.data.role?.toLowerCase() === 'admin')
           return navigate('/dashboard-admin')
       }
     }
   }
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    const result = await dispatch(signup(data))
+    const result = await fetchSignUp(data).unwrap()
 
-    if (result.payload.status === 'success') {
-      return navigate('/sign-in')
-    }
+    if (result.status === 'success') return navigate('/sign-in')
   }
 
   // ! INITIAL RENDER
@@ -93,6 +95,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
             {/* Input Name */}
             <FormField
               control={form.control}
+              disabled={isLoading}
               name='name'
               render={({ field }) => (
                 <FormItem className='space-y-3 text-textPrimary'>
@@ -112,6 +115,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
             {/* Input Email */}
             <FormField
               control={form.control}
+              disabled={isLoading}
               name='email'
               render={({ field }) => (
                 <FormItem className='space-y-2 text-textPrimary'>
@@ -131,6 +135,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
             {/* Input Password */}
             <FormField
               control={form.control}
+              disabled={isLoading}
               name='password'
               render={({ field }) => (
                 <FormItem className='space-y-2 text-textPrimary'>
@@ -169,6 +174,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
             <div className='flex items-center gap-2'>
               {/* Google */}
               <Button
+                disabled={isLoading}
                 className='w-full border hover:border-transparent hover:bg-colorPrimary '
                 leftSection={<FcGoogle className='h-4 w-4' />}
               >
@@ -177,6 +183,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
 
               {/* Apple */}
               <Button
+                disabled={isLoading}
                 className='w-full border hover:border-transparent hover:bg-colorPrimary'
                 type='button'
                 leftSection={<FaApple className='h-4 w-4' />}

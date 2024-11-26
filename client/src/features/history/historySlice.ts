@@ -1,19 +1,15 @@
 import { type IHistoryState } from '@/utils/type'
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import {
-  getMyHistoryThunk,
-  getAllThunk,
-  uploadNewAudioThunk,
-  createNewHistoryThunk,
-} from './historyThunk'
-import { toast } from '@/components/ui/use-toast'
+import { createSlice } from '@reduxjs/toolkit'
 
 const initialState: IHistoryState = {
   allHistory: [],
 
+  showedHistory: [],
+
   paginationHistory: {
     currentPage: 1,
     totalPage: 10,
+    pageSize: 10,
   },
 
   singleHistory: {
@@ -21,7 +17,7 @@ const initialState: IHistoryState = {
     fileName: '',
     title: '',
     createdAt: '',
-    date: ''
+    date: '',
   },
 
   result: {
@@ -38,117 +34,56 @@ const initialState: IHistoryState = {
   isLoading: false,
 }
 
-// BASE FETCH
-export const getMyHistory = createAsyncThunk('getMyHistory', getMyHistoryThunk)
-export const getAllHistory = createAsyncThunk('getAllHistory', getAllThunk)
-export const uploadAudio = createAsyncThunk(
-  'uploadNewAudio',
-  uploadNewAudioThunk
-)
-
-export const createNewHistory = createAsyncThunk(
-  'createNewHistory',
-  createNewHistoryThunk
-)
-
 export const historySlice = createSlice({
   name: 'history',
   initialState,
   reducers: {
-    setCurrentPage: function (state, action: PayloadAction<number>) {
-      state.paginationHistory.currentPage = action.payload
+    setCurrentPage: (state, { payload }) => {
+      state.paginationHistory.currentPage = payload
+
+      const startIndex = (payload - 1) * state.paginationHistory.pageSize
+      const endIndex = startIndex + state.paginationHistory.pageSize
+
+      state.showedHistory = state.allHistory.slice(startIndex, endIndex)
     },
     setResults: function (state, { payload }) {
       state.result.summary = payload.summary
-      state.result.transcript = payload.transcript
+      state.result.transcript = payload.transcript.segments
+    },
+    setHistory: function (state, { payload }) {
+      state.allHistory = payload.data
+      state.paginationHistory.totalPage = Math.ceil(payload.data.length / 10)
+      state.showedHistory = payload.data.slice(
+        state.paginationHistory.currentPage - 1,
+        state.paginationHistory.pageSize
+      )
+    },
+    setSearch: function (state, { payload }) {
+      const histories = JSON.parse(JSON.stringify(state))
+
+      const historySearch = histories.allHistory.filter((history: any) => {
+        return history.title?.toLowerCase().includes(payload.toLowerCase())
+      })
+
+      state.paginationHistory.totalPage = Math.ceil(historySearch.length / 10)
+
+      state.showedHistory = historySearch.slice(
+        state.paginationHistory.currentPage - 1,
+        state.paginationHistory.pageSize
+      )
     },
     setIsLoading: function (state, { payload }) {
       state.isLoading = payload
     },
   },
-  extraReducers(builder) {
-    builder
-      // Get My History
-      .addCase(getMyHistory.pending, function (state) {
-        state.isLoading = true
-      })
-      .addCase(
-        getMyHistory.fulfilled,
-        (
-          state,
-          action: PayloadAction<{
-            data: typeof initialState.allHistory
-            result: number
-          }>
-        ) => {
-          state.allHistory = action.payload.data
-          state.paginationHistory.totalPage = action.payload.result
-          state.isLoading = false
-        }
-      )
-      .addCase(getMyHistory.rejected, function (state) {
-        state.isLoading = false
-      })
-
-      // Get My History
-      .addCase(getAllHistory.pending, function (state) {
-        state.isLoading = true
-      })
-      .addCase(
-        getAllHistory.fulfilled,
-        function (
-          state,
-          action: PayloadAction<{
-            data: typeof initialState.allHistory
-            result: number
-          }>
-        ) {
-          state.allHistory = action.payload.data
-          state.paginationHistory.totalPage = action.payload.result
-          state.isLoading = false
-        }
-      )
-      .addCase(getAllHistory.rejected, function (state) {
-        state.isLoading = false
-      })
-
-      //Upload new audio
-      .addCase(uploadAudio.pending, function (state) {
-        state.isLoading = true
-      })
-      .addCase(uploadAudio.fulfilled, function (state, { payload }) {
-        state.result.summary = payload.summary
-        state.result.transcript = payload.transcript.segments
-
-        state.isLoading = false
-      })
-      .addCase(uploadAudio.rejected, function (state) {
-        state.isLoading = false
-      })
-
-      //Create New History
-      .addCase(createNewHistory.pending, function (state) {
-        state.isLoading = true
-      })
-      .addCase(createNewHistory.fulfilled, function (state, { payload }) {
-        state.isLoading = false
-
-        toast({ title: 'Success', description: payload.message })
-      })
-      .addCase(
-        createNewHistory.rejected,
-        function (state, { payload }: { payload: any }) {
-          toast({
-            title: 'Error',
-            description: payload,
-            variant: 'destructive',
-          })
-          state.isLoading = false
-        }
-      )
-  },
 })
 
-export const { setCurrentPage, setResults, setIsLoading } = historySlice.actions
+export const {
+  setCurrentPage,
+  setResults,
+  setIsLoading,
+  setHistory,
+  setSearch,
+} = historySlice.actions
 
 export default historySlice.reducer

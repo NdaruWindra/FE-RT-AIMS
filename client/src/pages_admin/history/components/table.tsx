@@ -1,4 +1,4 @@
-import { Checkbox } from '@/components/ui/checkbox';
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Table,
   TableBody,
@@ -6,40 +6,40 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { TSingleUser } from '@/utils/type';
-import { useNavigate } from 'react-router-dom';
+} from '@/components/ui/table'
+import { TSingleUser } from '@/utils/type'
+import { useNavigate } from 'react-router-dom'
 
 interface TableHistoryProps {
-  data: TSingleUser[];
-  onEdit: (user: { username: string; email: string }) => void;
-  sortOrder: string;
+  data: TSingleUser[]
+  onEdit: (user: { username: string; email: string }) => void
+  sortOrder: string
 }
 
 export function TableHistory({ data, onEdit, sortOrder }: TableHistoryProps) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const handleNameClick = (username: string) => {
-    navigate(`/dashboard-admin/history-detail-admin`, { state: { username } });
-  };
+    navigate(`/dashboard-admin/history-detail-admin`, { state: { username } })
+  }
 
   // Sorting the data based on sortOrder
   const sortedData = [...data].sort((a, b) => {
     if (sortOrder === 'a-z') {
-      return a.username.localeCompare(b.username);
+      return a.username.localeCompare(b.username)
     }
     if (sortOrder === 'z-a') {
-      return b.username.localeCompare(a.username);
+      return b.username.localeCompare(a.username)
     }
-    return 0;
-  });
+    return 0
+  })
 
   if (sortedData.length === 0) {
     return (
       <div className='mt-5'>
         <h1>History is empty</h1>
       </div>
-    );
+    )
   }
 
   return (
@@ -57,36 +57,43 @@ export function TableHistory({ data, onEdit, sortOrder }: TableHistoryProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedData.map((user) => (
-            <TableRow key={user.id} className='h-14 hover:cursor-pointer'>
-              <TableCell className='px-4 py-2'>
-                <Checkbox />
-              </TableCell>
-              <TableCell
-                className='px-4 py-2 font-medium text-blue-600 hover:underline cursor-pointer'
-                onClick={() => handleNameClick(user.username)}
+          {sortedData.map(function (user: any) {
+            return (
+              <TableRow
+                key={user.user_id}
+                className='h-14 hover:cursor-pointer'
               >
-                {user.username}
-              </TableCell>
-              <TableCell className='px-4 py-2 text-center'>
-                {user.history?.length}
-              </TableCell>
-              <TableCell className='px-4 py-2'>{user.email}</TableCell>
-              <TableCell className='space-x-2 px-4 py-2 text-right'>
-                <button
-                  onClick={() => onEdit({ username: user.username, email: user.email })}
-                  className='text-blue-600 hover:underline'
+                <TableCell className='px-4 py-2'>
+                  <Checkbox />
+                </TableCell>
+                <TableCell
+                  className='cursor-pointer px-4 py-2 font-medium text-blue-600 hover:underline'
+                  onClick={() => handleNameClick(user.username)}
                 >
-                  Edit
-                </button>
-                <a href='#' className='text-red-600 hover:underline'>
-                  Delete
-                </a>
-              </TableCell>
-            </TableRow>
-          ))}
+                  {user.username}
+                </TableCell>
+                <TableCell className='px-4 py-2 text-center'>
+                  {user.history?.length}
+                </TableCell>
+                <TableCell className='px-4 py-2'>{user.email}</TableCell>
+                <TableCell className='space-x-2 px-4 py-2 text-right'>
+                  <button
+                    onClick={() =>
+                      onEdit({ username: user.username, email: user.email })
+                    }
+                    className='text-blue-600 hover:underline'
+                  >
+                    Edit
+                  </button>
+                  <a href='#' className='text-red-600 hover:underline'>
+                    Delete
+                  </a>
+                </TableCell>
+              </TableRow>
+            )
+          })}
         </TableBody>
       </Table>
     </div>
-  );
+  )
 }

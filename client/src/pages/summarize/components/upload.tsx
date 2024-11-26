@@ -1,10 +1,9 @@
 import { toast } from '@/components/ui/use-toast'
 import {
-  createNewHistory,
-  setIsLoading,
-  uploadAudio,
-} from '@/features/history/historySlice'
-import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
+  usePostHistoryMutation,
+  useUploadAudioMutation,
+} from '@/features/history/historyThunk'
+import { useAppSelector } from '@/hooks/use-redux'
 import React, { useState } from 'react'
 import { IoClose } from 'react-icons/io5'
 import { RiFolderUploadFill } from 'react-icons/ri'
@@ -19,8 +18,8 @@ export function Upload({ onClose }: UploadProps) {
 
   const user = useAppSelector((state) => state.user)
   const history = useAppSelector((state) => state.history)
-
-  const dispatch = useAppDispatch()
+  const [postHistory] = usePostHistoryMutation()
+  const [uploadAudio] = useUploadAudioMutation()
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault()
@@ -47,31 +46,30 @@ export function Upload({ onClose }: UploadProps) {
 
   async function handleOnSubmit(e: any) {
     e.preventDefault()
-    if (file) {
-      onClose()
-      const audioResult = await dispatch(uploadAudio(file)).unwrap()
 
-      if (!audioResult || !audioResult.transcript || !audioResult.summary) {
-        throw new Error('Failed to process audio file')
-      }
+    try {
+      if (file) {
+        onClose()
+        const { data } = await uploadAudio(file)
 
-      const transcripts = audioResult.transcript.segments
-        ?.map((data: any) => data['text'].trim())
-        .join('')
+        const transcripts = data.transcript.segments
+          ?.map((data: any) => data['text'].trim())
+          .join('')
 
-      const historyResult = await dispatch(
-        createNewHistory({
+        await postHistory({
           token: user?.accessToken,
-          summary: audioResult.summary,
+          summary: data.summary,
           transcript: transcripts,
           title: `${Date.now()}${file.name}`,
         })
-      ).unwrap()
-
-      toast({ description: historyResult.message, title: historyResult.status })
+      }
+    } catch (error: any) {
+      toast({
+        description: 'Error creating new history',
+        title: 'Error',
+        variant: 'destructive',
+      })
     }
-
-    dispatch(setIsLoading(false))
   }
 
   return (

@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { FaMicrophone, FaSquare, FaSpinner } from 'react-icons/fa6'
-import { createNewHistory, setResults } from '@/features/history/historySlice'
+import { setResults } from '@/features/history/historySlice'
 import { IoMdDownload } from 'react-icons/io'
 import { GrPowerReset } from 'react-icons/gr'
 import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
-import { uploadAudio } from '@/features/history/historySlice'
 import { Button } from '@/components/ui/button'
+import {
+  usePostHistoryMutation,
+  useUploadAudioMutation,
+} from '@/features/history/historyThunk'
+import { toast } from '@/components/ui/use-toast'
 
 export function Summarize() {
   const [isRecording, setIsRecording] = useState(false)
@@ -14,8 +18,12 @@ export function Summarize() {
 
   const audioChunksRef = useRef<Blob[]>([])
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+
   const history = useAppSelector((state) => state.history)
   const user = useAppSelector((state) => state.user)
+
+  const [postHistory] = usePostHistoryMutation()
+  const [uploadAudio] = useUploadAudioMutation()
 
   const dispatch = useAppDispatch()
 
@@ -76,30 +84,31 @@ export function Summarize() {
   }
 
   async function handleSummarize(e: any) {
+    e.preventDefault()
+
     try {
-      e.preventDefault()
-
       if (file) {
-        const audioResult = await dispatch(uploadAudio(file)).unwrap()
+        const { data } = await uploadAudio(file)
 
-        if (!audioResult || !audioResult.transcript || !audioResult.summary) {
-          throw new Error('Failed to process audio file')
-        }
-        const transcripts = audioResult.transcript.segments
+        const transcripts = data.transcript.segments
           ?.map((data: any) => data['text'].trim())
           .join('')
 
-        await dispatch(
-          createNewHistory({
-            token: user?.accessToken,
-            summary: audioResult?.summary,
-            transcript: transcripts,
-            title: `${Date.now()}${file.name}`,
-          })
-        ).unwrap()
+        await postHistory({
+          token: user?.accessToken,
+          summary: data.summary,
+          transcript: transcripts,
+          title: `${Date.now()}${file.name}`,
+        })
       }
-    } catch (error) {
-      throw error
+
+      setFile(null)
+    } catch (error: any) {
+      toast({
+        description: 'Error creating new history',
+        title: 'Error',
+        variant: 'destructive',
+      })
     }
   }
 
@@ -116,8 +125,8 @@ export function Summarize() {
   return (
     <section>
       <div className='space-y-5 md:flex md:flex-row md:space-x-5 md:space-y-0'>
-        <div className='flex h-fit flex-col items-center space-y-4 overflow-y-auto rounded-lg bg-primary p-6 md:w-1/2'>
-          <h2 className='font-bold text-colorPrimary md:text-lg lg:text-2xl'>
+        <div className='flex h-fit flex-col items-center space-y-4 overflow-y-auto rounded-lg bg-colorPrimary p-6  dark:bg-primary md:w-1/2'>
+          <h2 className='font-bold text-white dark:text-colorPrimary md:text-lg lg:text-2xl'>
             Record Audio
           </h2>
           {[
@@ -187,8 +196,8 @@ export function Summarize() {
           )}
         </div>
 
-        <div className='flex h-fit flex-col space-y-7 overflow-y-auto rounded-lg bg-primary p-6 md:w-1/2'>
-          <h1 className='text-center text-xl font-bold text-colorPrimary md:text-2xl'>
+        <div className='flex h-fit flex-col space-y-7 overflow-y-auto rounded-lg bg-colorPrimary p-6 dark:bg-primary md:w-1/2'>
+          <h1 className='text-center text-xl font-bold text-white dark:text-colorPrimary md:text-2xl'>
             Result
           </h1>
           {history.isLoading ? (
@@ -201,7 +210,7 @@ export function Summarize() {
           ) : history.result?.summary ? (
             <div className='scrollbar-custom max-h-[400px] space-y-4 overflow-y-auto p-2'>
               <div>
-                <h2 className='text-lg font-semibold text-colorPrimary'>
+                <h2 className='text-lg font-semibold text-white dark:text-colorPrimary'>
                   Transcript:
                 </h2>
                 {history.result?.transcript.map(function (data: any, index) {

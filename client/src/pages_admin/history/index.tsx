@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Search } from '@/components/search';
+import { useState } from 'react'
+import { Search } from '@/components/search'
 import {
   Select,
   SelectGroup,
@@ -7,45 +7,43 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
-} from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
-import { TableHistory } from './components/table';
+} from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
+import { TableHistory } from './components/table'
 
-import { useAppDispatch, useAppSelector } from '@/hooks/use-redux';
-import { getAllUser } from '@/features/user/userSlice';
-import { PaginationHistory } from './components/pagination-history';
-import { Edit } from './components/edit';
+import { useAppSelector } from '@/hooks/use-redux'
+import { PaginationHistory } from './components/pagination-history'
+import { Edit } from './components/edit'
+import { useFetchAllUsersQuery } from '@/features/user/userThunk'
 
 export default function ProductTable() {
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [editingData, setEditingData] = useState<{ username: string; email: string } | null>(null);
-  const [sortOrder, setSortOrder] = useState('');
+  const [isEditOpen, setIsEditOpen] = useState(false)
+  const [editingData, setEditingData] = useState<{
+    username: string
+    email: string
+  } | null>(null)
+  const [sortOrder, setSortOrder] = useState('')
 
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.user);
-  const history = useAppSelector((state) => state.history);
-
-  // Mengambil data pengguna saat komponen dimuat
-  useEffect(() => {
-    dispatch(getAllUser(user.accessToken));
-  }, [dispatch, user.accessToken]);
+  const user = useAppSelector((state) => state.user)
+  const history = useAppSelector((state) => state.history)
+  const { data } = useFetchAllUsersQuery(user.accessToken)
 
   // Mengatur urutan sort
   const handleSortChange = (value: string) => {
-    setSortOrder(value);
-  };
+    setSortOrder(value)
+  }
 
   // Mengatur data pengguna yang akan diedit dan membuka modal
   const handleEditClick = (data: { username: string; email: string }) => {
-    setEditingData(data);
-    setIsEditOpen(true);
-  };
+    setEditingData(data)
+    setIsEditOpen(true)
+  }
 
   // Menutup modal edit
   const handleCloseEdit = () => {
-    setIsEditOpen(false);
-    setEditingData(null);
-  };
+    setIsEditOpen(false)
+    setEditingData(null)
+  }
 
   return (
     <div className='relative w-full shadow-md sm:rounded-lg'>
@@ -70,7 +68,11 @@ export default function ProductTable() {
       </div>
 
       {/* Tabel pengguna */}
-      <TableHistory data={user.allUser} onEdit={handleEditClick} sortOrder={sortOrder} />
+      <TableHistory
+        data={user.allUser}
+        onEdit={handleEditClick}
+        sortOrder={sortOrder}
+      />
 
       {/* Modal Edit */}
       {isEditOpen && editingData && (
@@ -80,5 +82,5 @@ export default function ProductTable() {
       {/* Pagination */}
       <PaginationHistory data={history.allHistory} />
     </div>
-  );
+  )
 }

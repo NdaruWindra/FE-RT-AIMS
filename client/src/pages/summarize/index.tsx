@@ -29,7 +29,7 @@ function Index() {
       <section className='flex justify-between'>
         <h1 className='text-2xl font-bold md:text-3xl'>Summarize Meeting AI</h1>
         <Button
-          className=' bg-colorPrimary font-semibold text-primary dark:hover:text-textPrimary md:flex'
+          className=' bg-colorPrimary font-semibold text-white dark:hover:text-textPrimary md:flex'
           onClick={handleUploadClick}
           disabled={history.isLoading}
         >
