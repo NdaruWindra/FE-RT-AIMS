@@ -1,8 +1,8 @@
 import axios from 'axios'
 
 export const customFetch = axios.create({
-  baseURL: import.meta.env.VITE_APP_API_BASE_URL,
-  // baseURL: 'http://localhost:3000/api/v1',
+  // baseURL: import.meta.env.VITE_APP_API_BASE_URL,
+  baseURL: 'http://localhost:3000/api/v1',
 })
 
 export const customFetchAudio = axios.create({
