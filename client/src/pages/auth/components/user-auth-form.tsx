@@ -4,7 +4,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FcGoogle } from 'react-icons/fc'
-import { FaApple } from 'react-icons/fa'
+import { FaApple, FaGoogle } from 'react-icons/fa'
+import { GoogleLogin } from '@react-oauth/google' // Import Google Login
 import {
   Form,
   FormControl,
@@ -76,19 +77,29 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     }
   }
 
-  // ! INITIAL RENDER
-  useEffect(function () {
+  // const onGoogleSignInSuccess = async (response: any) => {
+  //   const result = await dispatch(googleSignin(response.credential))
+  //   if (result.payload.status === 'success') {
+  //     return navigate('/dashboard')
+  //   }
+  // }
+
+  const onGoogleSignInError = () => {
+    console.error('Google Sign-In failed.')
+  }
+
+  useEffect(() => {
     if (!isAuthenticated && refreshToken) {
       initialRender()
     }
-  }, [])
+  }, [isAuthenticated, refreshToken]) // Tambahkan dependensi
 
   return (
     <div className={cn('grid gap-6', className)} {...props}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
           <div className='grid gap-2 space-y-3'>
-            {/* Input Email*/}
+            {/* Input Email */}
             <FormField
               control={form.control}
               name='email'
@@ -138,7 +149,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               )}
             />
 
-            {/* Button SignIn */}
+            {/* Button Sign In */}
             <Button
               type='submit'
               className='bg-colorPrimary text-primary hover:text-textPrimary'
@@ -162,14 +173,14 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       </div>
 
       <div className='flex items-center gap-2'>
-        {/* Google */}
         <Button
           className='w-full border hover:border-transparent hover:bg-colorPrimary'
           type='button'
-          leftSection={<FcGoogle className='h-4 w-4' />}
+          leftSection={<FaGoogle className='h-4 w-4' />}
         >
           Google
         </Button>
+
 
         {/* Apple */}
         <Button

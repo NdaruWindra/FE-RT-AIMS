@@ -14,6 +14,7 @@ export type TSingleUser = {
   email: string
   history?: string
   date: string
+  user_id: string
 }
 
 export type TSingleResult = {

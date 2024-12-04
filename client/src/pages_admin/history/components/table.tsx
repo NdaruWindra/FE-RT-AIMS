@@ -13,10 +13,11 @@ import { useNavigate } from 'react-router-dom';
 interface TableHistoryProps {
   data: TSingleUser[];
   onEdit: (user: { username: string; email: string }) => void;
+  onDelete: (id: string) => void; // Tambahkan fungsi delete
   sortOrder: string;
 }
 
-export function TableHistory({ data, onEdit, sortOrder }: TableHistoryProps) {
+export function TableHistory({ data, onEdit, onDelete, sortOrder }: TableHistoryProps) {
   const navigate = useNavigate();
 
   const handleNameClick = (username: string) => {
@@ -79,9 +80,16 @@ export function TableHistory({ data, onEdit, sortOrder }: TableHistoryProps) {
                 >
                   Edit
                 </button>
-                <a href='#' className='text-red-600 hover:underline'>
-                  Delete
-                </a>
+                <button
+  onClick={() => {
+    console.log('Delete button clicked', user.user_id); // Menambahkan log untuk melihat apakah id dikirim
+    onDelete(user.user_id);
+  }}
+  className='text-red-600 hover:underline'
+>
+  Delete user
+</button>
+
               </TableCell>
             </TableRow>
           ))}

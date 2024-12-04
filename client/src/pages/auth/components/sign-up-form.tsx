@@ -18,7 +18,13 @@ import { Button } from '@/components/custom/button'
 import { PasswordInput } from '@/components/custom/password-input'
 import { cn } from '@/lib/utils'
 import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
-import { getRefreshTokenSlice, signup } from '@/features/user/userSlice'
+import {
+  getRefreshTokenSlice,
+  signup,
+  googleStart,
+  googleCallback,
+} from '@/features/user/userSlice'
+
 
 interface SignUpFormProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -40,9 +46,7 @@ const formSchema = z.object({
 
 export function SignUpForm({ className, ...props }: SignUpFormProps) {
   const { isLoading, isAuthenticated, refreshToken } = useAppSelector(
-    function (state) {
-      return state.user
-    }
+    (state) => state.user
   )
 
   const dispatch = useAppDispatch()
@@ -78,8 +82,23 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
     }
   }
 
+  // Handler untuk Google Sign-Up
+  const handleGoogleSignUp = async (googleData: any) => {
+    const result = await dispatch(googleStart(googleData))
+    if (result.meta.requestStatus === 'fulfilled') {
+      window.location.href = result.payload // Redirect ke Google login URL
+    }
+  }
+
+  const handleGoogleCallback = async (googleData: any) => {
+    const result = await dispatch(googleCallback(googleData))
+    if (result.payload.status === 'success') {
+      return navigate('/dashboard')
+    }
+  }
+
   // ! INITIAL RENDER
-  useEffect(function () {
+  useEffect(() => {
     if (!isAuthenticated && refreshToken) {
       initialRender()
     }
@@ -167,15 +186,16 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
             </div>
 
             <div className='flex items-center gap-2'>
-              {/* Google */}
+              {/* Google Sign Up Button */}
               <Button
-                className='w-full border hover:border-transparent hover:bg-colorPrimary '
-                leftSection={<FcGoogle className='h-4 w-4' />}
+                className='w-full border hover:border-transparent hover:bg-colorPrimary flex items-center justify-center'
+                type='button'
+                onClick={handleGoogleSignUp}
               >
-                Google
+                <FcGoogle className='h-5 w-5 mr-2' /> Google
               </Button>
 
-              {/* Apple */}
+              {/* Apple Sign Up Button */}
               <Button
                 className='w-full border hover:border-transparent hover:bg-colorPrimary'
                 type='button'

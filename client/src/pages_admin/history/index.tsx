@@ -12,14 +12,16 @@ import { Separator } from '@/components/ui/separator';
 import { TableHistory } from './components/table';
 
 import { useAppDispatch, useAppSelector } from '@/hooks/use-redux';
-import { getAllUser } from '@/features/user/userSlice';
+import { getAllUser, deleteUser } from '@/features/user/userSlice';
 import { PaginationHistory } from './components/pagination-history';
 import { Edit } from './components/edit';
+import { useNavigate } from 'react-router-dom';
 
 export default function ProductTable() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingData, setEditingData] = useState<{ username: string; email: string } | null>(null);
   const [sortOrder, setSortOrder] = useState('');
+  const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user);
@@ -47,6 +49,15 @@ export default function ProductTable() {
     setEditingData(null);
   };
 
+  const handleDelete = async (id: string) => {
+    try {
+      await dispatch(deleteUser(id)).unwrap();
+      navigate('/dashboard-admin');
+    } catch (error: any) {
+      console.error(error || 'Failed to delete user');
+    }
+  };
+
   return (
     <div className='relative w-full shadow-md sm:rounded-lg'>
       <h1 className='text-2xl font-bold'>My History</h1>
@@ -70,7 +81,7 @@ export default function ProductTable() {
       </div>
 
       {/* Tabel pengguna */}
-      <TableHistory data={user.allUser} onEdit={handleEditClick} sortOrder={sortOrder} />
+      <TableHistory data={user.allUser} onEdit={handleEditClick} sortOrder={sortOrder} onDelete={handleDelete} />
 
       {/* Modal Edit */}
       {isEditOpen && editingData && (

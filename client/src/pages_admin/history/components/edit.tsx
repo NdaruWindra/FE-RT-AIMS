@@ -5,21 +5,22 @@ import { Form } from '@/components/ui/form';
 import { FormSettings } from './form-settings';
 import { useAppDispatch, useAppSelector } from '@/hooks/use-redux';
 import { updateUser } from '@/features/user/userSlice';
+import { useNavigate } from 'react-router-dom';
 
 interface EditProps {
   onClose: () => void;
-  initialData: { username: string; email: string, };
+  initialData: { username: string; email: string };
 }
 
 export function Edit({ onClose, initialData }: EditProps) {
   const token = useAppSelector((state) => state.user.refreshToken) || '';
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const form = useForm({
     defaultValues: {
-      username: initialData.username,
-      email: initialData.email,
-      targetEmail: initialData.email,
+      username: initialData.username, 
+      newEmail: '',                  
     },
   });
 
@@ -28,23 +29,23 @@ export function Edit({ onClose, initialData }: EditProps) {
       updateUser({
         accessToken: token,
         data: {
-          username: data.username, // Tetap gunakan "username" sesuai input form
-          email: data.email,
-          targetEmail: data.targetEmail, // Target email untuk update
+          username: data.username,       
+          newEmail: data.newEmail,       
+          targetEmail: initialData.email, 
         },
       })
     );
-  
+    
+
     console.log('Form data submitted:', data);
     onClose();
+    return navigate('/dashboard-admin')
   };
-  
 
   useEffect(() => {
     form.reset({
       username: initialData.username,
-      email: initialData.email,
-      targetEmail: initialData.email,
+      newEmail: initialData.email, 
     });
   }, [initialData, form]);
 
@@ -69,9 +70,9 @@ export function Edit({ onClose, initialData }: EditProps) {
             />
             <FormSettings
               control={form.control}
-              name="targetEmail"
-              label="Email"
-              placeholder="Your Email"
+              name="newEmail"
+              label="New Email"
+              placeholder="Enter New Email"
             />
           </div>
           <div className="flex justify-end mt-6">

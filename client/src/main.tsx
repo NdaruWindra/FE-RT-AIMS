@@ -6,12 +6,18 @@ import router from '@/router'
 import '@/index.css'
 import { store } from '../store'
 import { Provider } from 'react-redux'
+import { GoogleOAuthProvider } from '@react-oauth/google'
+
+// Ganti dengan Client ID Google OAuth Anda
+const GOOGLE_CLIENT_ID = '446822179575-cjj1fttvud5k33k88e4d2uv8alhjp1kf.apps.googleusercontent.com'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <Provider store={store}>
-    <ThemeProvider defaultTheme='dark' storageKey='vite-ui-theme'>
-      <RouterProvider router={router} />
-      <Toaster />
-    </ThemeProvider>
-  </Provider>
+  <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+    <Provider store={store}>
+      <ThemeProvider defaultTheme='dark' storageKey='vite-ui-theme'>
+        <RouterProvider router={router} />
+        <Toaster />
+      </ThemeProvider>
+    </Provider>
+  </GoogleOAuthProvider>
 )
