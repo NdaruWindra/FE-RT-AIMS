@@ -1,30 +1,32 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { FiMenu } from 'react-icons/fi'
 import { useEffect, useRef, useState } from 'react'
+import { FiMenu } from 'react-icons/fi'
+import { MdLogout } from 'react-icons/md'
+
 import { sideBarLinksAdmin } from '@/utils/constant'
 import { ISideBarLink } from '@/utils/type'
 import { Button } from './custom/button'
 import { imagetextIL } from '@/components/assets/images/index'
-import { MdLogout } from 'react-icons/md'
-import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
-import { signout } from '@/features/user/userSlice'
+import { useAppSelector } from '@/hooks/use-redux'
+import { useFetchSignOutMutation } from '@/features/user/userThunk'
 
 export default function Sidebar() {
   const [openSidebar, setOpenSidebar] = useState<boolean>(false)
   const asideRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
-  const dispatch = useAppDispatch()
+
   const { refreshToken } = useAppSelector(function (store) {
     return store.user
   })
+  const [fetchSignOut] = useFetchSignOutMutation()
 
   function handleSidebar(sidebar: boolean) {
     setOpenSidebar(sidebar)
   }
 
-  function handleLogOut() {
+  async function handleLogOut() {
     if (refreshToken) {
-      dispatch(signout(refreshToken))
+      await fetchSignOut(refreshToken)
       navigate('/sign-in')
     }
   }

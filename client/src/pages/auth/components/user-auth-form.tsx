@@ -20,8 +20,11 @@ import { PasswordInput } from '@/components/custom/password-input'
 import { cn } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
-import { getRefreshTokenSlice, signin } from '@/features/user/userSlice'
+import { useAppSelector } from '@/hooks/use-redux'
+import {
+  useFetchRefreshTokenMutation,
+  useFetchSignInMutation,
+} from '@/features/user/userThunk'
 
 interface UserAuthFormProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -41,11 +44,13 @@ const formSchema = z.object({
 })
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const { isLoading, isAuthenticated, refreshToken } = useAppSelector(
-    (state) => state.user
+  const { isAuthenticated, refreshToken, isLoading } = useAppSelector(
+    function (state) {
+      return state.user
+    }
   )
-
-  const dispatch = useAppDispatch()
+  const [fetchSignIn] = useFetchSignInMutation()
+  const [fetchRefreshToken] = useFetchRefreshTokenMutation()
   const navigate = useNavigate()
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -58,22 +63,25 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
   async function initialRender() {
     if (refreshToken) {
-      const result = await dispatch(getRefreshTokenSlice(refreshToken))
+      const resultData = await fetchRefreshToken(refreshToken).unwrap()
 
-      if (result.payload.status === 'success') {
-        if (result.payload.data.role?.toLowerCase() === 'user')
+      if (resultData.status === 'success') {
+        if (resultData?.data.role?.toLowerCase() === 'user')
           return navigate('/dashboard')
-        if (result.payload.data.role?.toLowerCase() === 'admin')
+        if (resultData?.data.role?.toLowerCase() === 'admin')
           return navigate('/dashboard-admin')
       }
     }
   }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const result = await dispatch(signin(values))
+    const resultData = await fetchSignIn(values).unwrap()
 
-    if (result.payload.status === 'success') {
-      return navigate('/dashboard')
+    if (resultData.status === 'success') {
+      if (resultData?.data.role?.toLowerCase() === 'user')
+        return navigate('/dashboard')
+      if (resultData?.data.role?.toLowerCase() === 'admin')
+        return navigate('/dashboard-admin')
     }
   }
 
@@ -102,6 +110,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             {/* Input Email */}
             <FormField
               control={form.control}
+              disabled={isLoading}
               name='email'
               render={({ field }) => (
                 <FormItem className='space-y-3 text-textPrimary'>
@@ -121,6 +130,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             {/* Input Password */}
             <FormField
               control={form.control}
+              disabled={isLoading}
               name='password'
               render={({ field }) => (
                 <FormItem className='space-y-3 text-textPrimary'>
@@ -174,6 +184,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
       <div className='flex items-center gap-2'>
         <Button
+          disabled={isLoading}
           className='w-full border hover:border-transparent hover:bg-colorPrimary'
           type='button'
           leftSection={<FaGoogle className='h-4 w-4' />}
@@ -184,6 +195,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
         {/* Apple */}
         <Button
+          disabled={isLoading}
           className='w-full border hover:border-transparent hover:bg-colorPrimary'
           type='button'
           leftSection={<FaApple className='h-4 w-4' />}

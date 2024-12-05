@@ -49,12 +49,14 @@ export interface IUserState {
 export interface IHistoryState {
   singleHistory: TSingleHistory
   allHistory: TSingleHistory[]
+  showedHistory: TSingleHistory[]
 
   message: TMessage
 
   paginationHistory: {
     currentPage: number
     totalPage: number
+    pageSize: number
   }
 
   result: TSingleResult

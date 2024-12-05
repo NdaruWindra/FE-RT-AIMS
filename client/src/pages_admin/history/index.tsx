@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Search } from '@/components/search';
 import {
   Select,
@@ -11,33 +11,31 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { TableHistory } from './components/table';
 
-import { useAppDispatch, useAppSelector } from '@/hooks/use-redux';
-import { getAllUser, deleteUser } from '@/features/user/userSlice';
+import { useAppSelector, useAppDispatch } from '@/hooks/use-redux';
 import { PaginationHistory } from './components/pagination-history';
 import { Edit } from './components/edit';
-import { useNavigate } from 'react-router-dom';
+import { useFetchAllUsersQuery, useFetchDeleteUserMutation } from '@/features/user/userThunk';
+import { removeUser } from '@/features/user/userSlice';
 
 export default function ProductTable() {
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [editingData, setEditingData] = useState<{ username: string; email: string } | null>(null);
+  const [editingData, setEditingData] = useState<{
+    username: string;
+    email: string;
+  } | null>(null);
   const [sortOrder, setSortOrder] = useState('');
-  const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user);
   const history = useAppSelector((state) => state.history);
+  const { data } = useFetchAllUsersQuery(user.accessToken);
 
-  // Mengambil data pengguna saat komponen dimuat
-  useEffect(() => {
-    dispatch(getAllUser(user.accessToken));
-  }, [dispatch, user.accessToken]);
+  const [deleteUser] = useFetchDeleteUserMutation();
 
-  // Mengatur urutan sort
   const handleSortChange = (value: string) => {
     setSortOrder(value);
   };
 
-  // Mengatur data pengguna yang akan diedit dan membuka modal
   const handleEditClick = (data: { username: string; email: string }) => {
     setEditingData(data);
     setIsEditOpen(true);
@@ -51,28 +49,31 @@ export default function ProductTable() {
 
   const handleDelete = async (id: string) => {
     try {
-      await dispatch(deleteUser(id)).unwrap();
-      navigate('/dashboard-admin');
+
+      await deleteUser(id).unwrap();
+  
+      dispatch(removeUser(id));
     } catch (error: any) {
       console.error(error || 'Failed to delete user');
     }
   };
+  
 
   return (
-    <div className='relative w-full shadow-md sm:rounded-lg'>
-      <h1 className='text-2xl font-bold'>My History</h1>
+    <div className="relative w-full shadow-md sm:rounded-lg">
+      <h1 className="text-2xl font-bold">My History</h1>
 
-      <Separator className='my-4' />
+      <Separator className="my-4" />
 
-      <div className='grid grid-cols-2 items-end justify-between'>
+      <div className="grid grid-cols-2 items-end justify-between">
         <Select onValueChange={handleSortChange}>
-          <SelectTrigger className='w-[180px]'>
-            <SelectValue placeholder='Filter By' />
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter By" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectItem value='a-z'>A-Z</SelectItem>
-              <SelectItem value='z-a'>Z-A</SelectItem>
+              <SelectItem value="a-z">A-Z</SelectItem>
+              <SelectItem value="z-a">Z-A</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -81,7 +82,13 @@ export default function ProductTable() {
       </div>
 
       {/* Tabel pengguna */}
-      <TableHistory data={user.allUser} onEdit={handleEditClick} sortOrder={sortOrder} onDelete={handleDelete} />
+      <TableHistory
+  data={user.allUser}
+  onEdit={handleEditClick}
+  onDelete={handleDelete} 
+  sortOrder={sortOrder}
+/>
+
 
       {/* Modal Edit */}
       {isEditOpen && editingData && (
@@ -89,7 +96,7 @@ export default function ProductTable() {
       )}
 
       {/* Pagination */}
-      <PaginationHistory data={history.allHistory} />
+      <PaginationHistory data={data} />
     </div>
   );
 }

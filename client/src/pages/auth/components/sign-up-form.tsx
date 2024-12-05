@@ -17,14 +17,11 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/custom/button'
 import { PasswordInput } from '@/components/custom/password-input'
 import { cn } from '@/lib/utils'
-import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
+import { useAppSelector } from '@/hooks/use-redux'
 import {
-  getRefreshTokenSlice,
-  signup,
-  googleStart,
-  googleCallback,
-} from '@/features/user/userSlice'
-
+  useFetchRefreshTokenMutation,
+  useFetchSignUpMutation,
+} from '@/features/user/userThunk'
 
 interface SignUpFormProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -46,10 +43,13 @@ const formSchema = z.object({
 
 export function SignUpForm({ className, ...props }: SignUpFormProps) {
   const { isLoading, isAuthenticated, refreshToken } = useAppSelector(
-    (state) => state.user
+    function (state) {
+      return state.user
+    }
   )
+  const [fetchRefreshToken] = useFetchRefreshTokenMutation()
+  const [fetchSignUp] = useFetchSignUpMutation()
 
-  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -63,42 +63,25 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
 
   async function initialRender() {
     if (refreshToken) {
-      const result = await dispatch(getRefreshTokenSlice(refreshToken))
+      const result = await fetchRefreshToken(refreshToken).unwrap()
 
-      if (result.payload.status === 'success') {
-        if (result.payload.data.role?.toLowerCase() === 'user')
+      if (result.status === 'success') {
+        if (result.data.role?.toLowerCase() === 'user')
           return navigate('/dashboard')
-        if (result.payload.data.role?.toLowerCase() === 'admin')
+        if (result.data.role?.toLowerCase() === 'admin')
           return navigate('/dashboard-admin')
       }
     }
   }
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    const result = await dispatch(signup(data))
+    const result = await fetchSignUp(data).unwrap()
 
-    if (result.payload.status === 'success') {
-      return navigate('/sign-in')
-    }
-  }
-
-  // Handler untuk Google Sign-Up
-  const handleGoogleSignUp = async (googleData: any) => {
-    const result = await dispatch(googleStart(googleData))
-    if (result.meta.requestStatus === 'fulfilled') {
-      window.location.href = result.payload // Redirect ke Google login URL
-    }
-  }
-
-  const handleGoogleCallback = async (googleData: any) => {
-    const result = await dispatch(googleCallback(googleData))
-    if (result.payload.status === 'success') {
-      return navigate('/dashboard')
-    }
+    if (result.status === 'success') return navigate('/sign-in')
   }
 
   // ! INITIAL RENDER
-  useEffect(() => {
+  useEffect(function () {
     if (!isAuthenticated && refreshToken) {
       initialRender()
     }
@@ -112,6 +95,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
             {/* Input Name */}
             <FormField
               control={form.control}
+              disabled={isLoading}
               name='name'
               render={({ field }) => (
                 <FormItem className='space-y-3 text-textPrimary'>
@@ -131,6 +115,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
             {/* Input Email */}
             <FormField
               control={form.control}
+              disabled={isLoading}
               name='email'
               render={({ field }) => (
                 <FormItem className='space-y-2 text-textPrimary'>
@@ -150,6 +135,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
             {/* Input Password */}
             <FormField
               control={form.control}
+              disabled={isLoading}
               name='password'
               render={({ field }) => (
                 <FormItem className='space-y-2 text-textPrimary'>
@@ -186,17 +172,18 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
             </div>
 
             <div className='flex items-center gap-2'>
-              {/* Google Sign Up Button */}
+              {/* Google */}
               <Button
-                className='w-full border hover:border-transparent hover:bg-colorPrimary flex items-center justify-center'
-                type='button'
-                onClick={handleGoogleSignUp}
+                disabled={isLoading}
+                className='w-full border hover:border-transparent hover:bg-colorPrimary '
+                leftSection={<FcGoogle className='h-4 w-4' />}
               >
-                <FcGoogle className='h-5 w-5 mr-2' /> Google
+                Google
               </Button>
 
-              {/* Apple Sign Up Button */}
+              {/* Apple */}
               <Button
+                disabled={isLoading}
                 className='w-full border hover:border-transparent hover:bg-colorPrimary'
                 type='button'
                 leftSection={<FaApple className='h-4 w-4' />}

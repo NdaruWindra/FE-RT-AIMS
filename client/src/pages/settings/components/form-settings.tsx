@@ -21,7 +21,7 @@ interface FormSettingsProps<T extends FieldValues> {
   name: FieldPath<T>
   label: string
   placeholder: string
-  disabled?: boolean 
+  disabled?: boolean
 }
 
 export function FormSettings<T extends FieldValues>({
@@ -29,7 +29,7 @@ export function FormSettings<T extends FieldValues>({
   name,
   label,
   placeholder,
-  disabled = false, 
+  disabled = false,
 }: FormSettingsProps<T>) {
   const form = useForm<T>()
 
@@ -38,7 +38,7 @@ export function FormSettings<T extends FieldValues>({
     return data.map((selectItem) => (
       <div key={selectItem.label}>
         <FormLabel>{selectItem.label}</FormLabel>
-        <Select disabled={disabled}> 
+        <Select disabled={disabled}>
           <SelectTrigger className='w-full text-[80%] md:text-base'>
             <SelectValue placeholder={selectItem.placeholder} />
           </SelectTrigger>
@@ -62,11 +62,7 @@ export function FormSettings<T extends FieldValues>({
         <FormItem className='space-y-2'>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Input
-              placeholder={placeholder}
-              disabled={disabled} 
-              {...field}
-            />
+            <Input placeholder={placeholder} disabled={disabled} {...field} />
           </FormControl>
           {renderedSelectItems}
         </FormItem>

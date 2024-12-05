@@ -144,28 +144,6 @@ export const sideBarLinksAdmin: ISideBarLink[] = [
   },
 ]
 
-export const dataFormSettingsSelectLeft: IDataFormSettingSelect[] = [
-  {
-    label: 'Gender',
-    placeholder: 'Your Gender',
-    selectItem: ['Male', 'Female', 'Other'],
-  },
-  {
-    label: 'Language',
-    placeholder: 'Your Language',
-    selectItem: ['Indonesia', 'English', 'Portugis'],
-  },
-]
+export const dataFormSettingsSelectLeft: IDataFormSettingSelect[] = []
 
-export const dataFormSettingsSelectRight: IDataFormSettingSelect[] = [
-  {
-    label: 'Country',
-    placeholder: 'Your Country',
-    selectItem: ['Indonesia', 'English', 'Netherland'],
-  },
-  {
-    label: 'Time Zone',
-    placeholder: 'Your Time Zone',
-    selectItem: ['UTC+07:00', 'Coming Soon', 'Other'],
-  },
-]
+export const dataFormSettingsSelectRight: IDataFormSettingSelect[] = []

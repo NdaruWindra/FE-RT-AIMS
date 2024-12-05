@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Table,
@@ -7,10 +8,43 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useDeleteHistoryMutation } from '@/features/history/historyThunk'
+import { useAppSelector } from '@/hooks/use-redux'
 import { TSingleHistory } from '@/utils/type'
 
-export function TableHistory({ data }: { data: TSingleHistory[] }) {
-  if (data.length === 0) {
+export function TableHistory() {
+  const {
+    isLoading,
+    showedHistory,
+    paginationHistory: { pageSize, currentPage },
+  } = useAppSelector(function (store) {
+    return store.history
+  })
+  const { accessToken } = useAppSelector(function (store) {
+    return store.user
+  })
+
+  const [deleteHistory] = useDeleteHistoryMutation()
+
+  const handleEdit = async (id: string) => {
+    console.log(id)
+  }
+  const handleDelete = async (id: string) => {
+    await deleteHistory({ accessToken, history_id: id })
+  }
+  const handleDownload = (id: string) => {
+    console.log(id)
+  }
+
+  if (isLoading) {
+    return (
+      <div className='mt-5 '>
+        <h1>Loading...</h1>
+      </div>
+    )
+  }
+
+  if (showedHistory.length === 0) {
     return (
       <div className='mt-5'>
         <h1>History is empty</h1>
@@ -26,14 +60,17 @@ export function TableHistory({ data }: { data: TSingleHistory[] }) {
             <TableHead className='px-4 py-2'>
               <Checkbox />
             </TableHead>
-            <TableHead className='w-[100px] px-4 py-2'>File Name</TableHead>
-            <TableHead className='px-4 py-2'>Duration</TableHead>
+            <TableHead className='text-center'>No</TableHead>
+            <TableHead className='w-[100px]  px-4 py-2'>File Name</TableHead>
+
             <TableHead className='px-4 py-2'>Created At</TableHead>
-            <TableHead className='px-4 py-2 text-right'>Action</TableHead>
+            <TableHead className='py-2  text-center'>Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data?.map(function (history: TSingleHistory) {
+          {showedHistory?.map(function (history: TSingleHistory, index) {
+            const dynamicNumber = (currentPage - 1) * pageSize + index + 1
+
             return (
               <TableRow
                 key={history.id_history}
@@ -42,21 +79,41 @@ export function TableHistory({ data }: { data: TSingleHistory[] }) {
                 <TableCell className='px-4 py-2'>
                   <Checkbox />
                 </TableCell>
+                <TableCell className='py-2 text-center font-medium'>
+                  {dynamicNumber}
+                </TableCell>
                 <TableCell className='px-4 py-2 font-medium'>
                   {history.title}
                 </TableCell>
-                <TableCell className='px-4 py-2 text-center'>00:20</TableCell>
+
                 <TableCell className='px-4 py-2'>{history.createdAt}</TableCell>
-                <TableCell className='space-x-2 px-4 py-2 text-right'>
-                  <a href='#' className='text-blue-600 hover:underline'>
+                <TableCell className=' py-2 text-center'>
+                  <Button
+                    disabled={isLoading}
+                    onClick={() => handleEdit(history.id_history)}
+                    variant={'ghost'}
+                    className='text-blue-600 hover:bg-transparent hover:underline'
+                  >
                     Edit
-                  </a>
-                  <a href='#' className='text-red-600 hover:underline'>
+                  </Button>
+
+                  <Button
+                    disabled={isLoading}
+                    onClick={() => handleDelete(history.id_history)}
+                    variant={'ghost'}
+                    className='text-red-600 hover:bg-transparent hover:underline'
+                  >
                     Delete
-                  </a>
-                  <a href='#' className='text-green-600 hover:underline'>
+                  </Button>
+
+                  <Button
+                    disabled={isLoading}
+                    onClick={() => handleDownload(history.id_history)}
+                    variant={'ghost'}
+                    className='text-green-600 hover:bg-transparent hover:underline'
+                  >
                     Download
-                  </a>
+                  </Button>
                 </TableCell>
               </TableRow>
             )

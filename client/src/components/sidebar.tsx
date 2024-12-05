@@ -6,25 +6,25 @@ import { ISideBarLink } from '@/utils/type'
 import { Button } from './custom/button'
 import { imagetextIL } from '@/components/assets/images/index'
 import { MdLogout } from 'react-icons/md'
-import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
-import { signout } from '@/features/user/userSlice'
+import { useAppSelector } from '@/hooks/use-redux'
+import { useFetchSignOutMutation } from '@/features/user/userThunk'
 
 export default function Sidebar() {
   const [openSidebar, setOpenSidebar] = useState<boolean>(false)
   const asideRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
-  const dispatch = useAppDispatch()
-  const { refreshToken } = useAppSelector(function (store) {
+  const { refreshToken, isLoading } = useAppSelector(function (store) {
     return store.user
   })
+  const [fetchSignOut] = useFetchSignOutMutation()
 
   function handleSidebar(sidebar: boolean) {
     setOpenSidebar(sidebar)
   }
 
-  function handleLogOut() {
+  async function handleLogOut() {
     if (refreshToken) {
-      dispatch(signout(refreshToken))
+      await fetchSignOut(refreshToken)
       navigate('/sign-in')
     }
   }
@@ -93,6 +93,7 @@ export default function Sidebar() {
 
           <Button
             onClick={handleLogOut}
+            disabled={isLoading}
             variant={'ghost'}
             className='group flex w-full items-center justify-start rounded-lg p-2 text-white hover:bg-foreground hover:bg-white hover:text-primary  dark:text-primary hover:dark:bg-colorPrimary'
           >

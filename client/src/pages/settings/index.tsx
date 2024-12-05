@@ -1,29 +1,66 @@
 import { Layout } from '@/components/custom/layout'
-import { Form } from '@/components/ui/form'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import {
+  useFetchSignOutMutation,
+  useFetchUpdateUserMutation,
+} from '@/features/user/userThunk'
+
 import { useForm } from 'react-hook-form'
 import { IoPersonCircle } from 'react-icons/io5'
-import { FormSettings } from './components/form-settings'
-import { useAppSelector } from '@/hooks/use-redux'
-import {
-  dataFormSettingsSelectLeft,
-  dataFormSettingsSelectRight,
-} from '@/utils/constant'
-import { Button } from '@/components/ui/button'
+
 import { useState } from 'react'
+import { useAppSelector } from '@/hooks/use-redux'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { useNavigate } from 'react-router-dom'
+
+const FormSchema = z.object({
+  username: z.string().min(2, {
+    message: 'Username must be at least 2 characters.',
+  }),
+  email: z
+    .string()
+    .min(1, { message: 'Please enter your email' })
+    .email({ message: 'Invalid email address' }),
+})
 
 export default function Settings() {
-  const { username, email } = useAppSelector((store) => store.user)
-  const form = useForm()
+  const { username, email, accessToken, isLoading, refreshToken } =
+    useAppSelector((store) => store.user)
+  const [fetchUpdateUser] = useFetchUpdateUserMutation()
+  const [fetchSignOut] = useFetchSignOutMutation()
+
+  const navigate = useNavigate()
   const [isEditing, setIsEditing] = useState(false)
 
-  // Toggle Edit Mode
-  const handleEditToggle = () => {
-    setIsEditing(!isEditing)
-  }
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      username: username,
+      email: email,
+    },
+  })
 
-  // Handle Save Changes
-  const handleSave = () => {
-    console.log('Data disimpan:', form.getValues())
+  const onSubmit = async () => {
+    const formValue = form.getValues()
+
+    await fetchUpdateUser({
+      username: formValue.username,
+      email: formValue.email,
+      targetEmail: email,
+      accessToken,
+    })
+    await fetchSignOut(refreshToken)
+
+    navigate('/sign-in')
     setIsEditing(false)
   }
 
@@ -40,6 +77,7 @@ export default function Settings() {
           </p>
         </section>
 
+        <h1>Become New </h1>
         {/* Profile */}
         <section>
           <div className='items-center justify-between space-y-2 lg:flex lg:space-y-0'>
@@ -70,31 +108,49 @@ export default function Settings() {
         </section>
 
         {/* Form */}
-        <section className='grid grid-cols-2 gap-4'>
+        <section>
           <Form {...form}>
-            {/* Email Field */}
-            <FormSettings
-              data={dataFormSettingsSelectLeft}
-              name='email'
-              label='Email'
-              placeholder='Your Email'
-              disabled={!isEditing}
-            />
-            {/* Username Field */}
-            <FormSettings
-              data={dataFormSettingsSelectRight}
-              name='username'
-              label='Username'
-              placeholder='Your Username'
-              disabled={!isEditing}
-            />
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className='grid w-full grid-cols-2 items-center gap-4'
+            >
+              <FormField
+                control={form.control}
+                disabled={!isEditing}
+                name='username'
+                defaultValue={username}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input placeholder={username} {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                disabled={!isEditing}
+                defaultValue={email}
+                name='email'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder={email} {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </form>
           </Form>
 
-          {/* Edit / Save Button Section */}
-          <div className='space-x-2'>
+          <div className='mt-5 space-x-2'>
             {!isEditing ? (
               <Button
-                onClick={handleEditToggle}
+                type='button'
+                onClick={() => setIsEditing(true)}
                 className='w-28 bg-colorPrimary text-primary hover:text-textPrimary'
               >
                 Edit
@@ -102,13 +158,16 @@ export default function Settings() {
             ) : (
               <>
                 <Button
-                  onClick={handleSave}
+                  disabled={isLoading}
+                  type='submit'
+                  onClick={onSubmit}
                   className='w-28 bg-green-500 text-white hover:bg-green-600'
                 >
                   Save
                 </Button>
                 <Button
-                  onClick={handleEditToggle}
+                  disabled={isLoading}
+                  onClick={() => setIsEditing(false)}
                   className='w-28 bg-gray-500 text-white hover:bg-gray-600'
                 >
                   Cancel

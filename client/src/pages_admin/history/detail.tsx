@@ -1,6 +1,6 @@
-import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { Search } from '@/components/search';
+import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Search } from '@/components/search'
 import {
   Select,
   SelectGroup,
@@ -8,32 +8,29 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
-} from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
-import { TableHistory } from './components/table-detail';
+} from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
+import { TableHistory } from './components/table-detail'
 
-import { useAppDispatch, useAppSelector } from '@/hooks/use-redux';
-import { getAllHistory } from '@/features/history/historySlice';
-import { PaginationHistory } from './components/pagination-history';
+import { useAppSelector } from '@/hooks/use-redux'
+import { PaginationHistory } from './components/pagination-history'
+import { useGetAllHistoryQuery } from '@/features/history/historyThunk'
 
 export default function ProductTable() {
-  const [sortOrder, setSortOrder] = useState('');
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.user);
-  const history = useAppSelector((state) => state.history);
+  const [sortOrder, setSortOrder] = useState('')
+  const navigate = useNavigate()
+  const user = useAppSelector((state) => state.user)
+  const history = useAppSelector((state) => state.history)
 
-  useEffect(() => {
-    dispatch(getAllHistory(user.accessToken));
-  }, [dispatch, user.accessToken]);
+  const data = useGetAllHistoryQuery(user.accessToken)
 
   const handleSortChange = (value: string) => {
-    setSortOrder(value);
-  };
+    setSortOrder(value)
+  }
 
   const handleBackClick = () => {
-    navigate('/dashboard-admin/history-admin');
-  };
+    navigate('/dashboard-admin/history-admin')
+  }
 
   return (
     <div className='relative w-full shadow-md sm:rounded-lg'>
@@ -59,7 +56,7 @@ export default function ProductTable() {
 
           <button
             onClick={handleBackClick}
-            className='px-4 py-2 bg-darkPrimary text-primary rounded-lg hover:dark:bg-colorPrimary hover:text-primary border border-primary transition-colors dark:bg-darkPrimary dark:text-primary dark:hover:bg-primary dark:hover:text-white'
+            className='bg-darkPrimary dark:bg-darkPrimary rounded-lg border border-primary px-4 py-2 text-primary transition-colors hover:text-primary dark:text-primary dark:hover:bg-primary hover:dark:bg-colorPrimary dark:hover:text-white'
           >
             Kembali
           </button>
@@ -72,5 +69,5 @@ export default function ProductTable() {
 
       <PaginationHistory data={history.allHistory} />
     </div>
-  );
+  )
 }
