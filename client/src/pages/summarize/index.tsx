@@ -6,6 +6,7 @@ import { Upload } from './components/upload'
 import { Summarize } from './components/summarize'
 import { Button } from '@/components/ui/button'
 import { useAppSelector } from '@/hooks/use-redux'
+import { Separator } from '@/components/ui/separator'
 
 function Index() {
   const [selectedLanguage, setSelectedLanguage] = useState('id')
@@ -25,7 +26,7 @@ function Index() {
   }
 
   return (
-    <div className='container mt-5 space-y-10'>
+    <div className='container mt-5 space-y-5'>
       <section className='flex justify-between'>
         <h1 className='text-2xl font-bold md:text-3xl'>Summarize Meeting AI</h1>
         <Button
@@ -37,14 +38,14 @@ function Index() {
           <PiUploadBold />
         </Button>
       </section>
+
+      <Separator />
       {showUpload && <Upload onClose={handleCloseUpload} />}
+
+      <h1>Record your meeting, get instant transcribe and summary by AI</h1>
 
       {/* Header */}
       <section className='space-y-5 lg:w-1/2'>
-        <h2 className='text-2xl'>
-          Record your meeting, get instant transcribe and summary by AI
-        </h2>
-
         <div className='flex space-x-4'>
           <span className={`fi fi-${selectedLanguage} text-2xl`} />
           <select

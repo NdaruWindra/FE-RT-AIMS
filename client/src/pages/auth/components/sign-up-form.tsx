@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FcGoogle } from 'react-icons/fc'
-import { FaApple } from 'react-icons/fa'
 import {
   Form,
   FormControl,
@@ -98,7 +97,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
               disabled={isLoading}
               name='name'
               render={({ field }) => (
-                <FormItem className='space-y-3 text-textPrimary'>
+                <FormItem className='space-y-3 text-background'>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input
@@ -118,7 +117,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
               disabled={isLoading}
               name='email'
               render={({ field }) => (
-                <FormItem className='space-y-2 text-textPrimary'>
+                <FormItem className='space-y-2 text-background'>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
@@ -138,7 +137,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
               disabled={isLoading}
               name='password'
               render={({ field }) => (
-                <FormItem className='space-y-2 text-textPrimary'>
+                <FormItem className='space-y-2 text-background'>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <PasswordInput
@@ -165,7 +164,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
                 <span className='w-full border-t' />
               </div>
               <div className='relative flex justify-center text-xs'>
-                <span className='bg-foreground px-2 text-muted-foreground'>
+                <span className='bg-gray-500 px-2 text-white'>
                   Or login with
                 </span>
               </div>
@@ -175,20 +174,10 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
               {/* Google */}
               <Button
                 disabled={isLoading}
-                className='w-full border hover:border-transparent hover:bg-colorPrimary '
+                className='w-full border hover:border-transparent hover:bg-colorPrimary hover:text-white'
                 leftSection={<FcGoogle className='h-4 w-4' />}
               >
                 Google
-              </Button>
-
-              {/* Apple */}
-              <Button
-                disabled={isLoading}
-                className='w-full border hover:border-transparent hover:bg-colorPrimary'
-                type='button'
-                leftSection={<FaApple className='h-4 w-4' />}
-              >
-                Apple
               </Button>
             </div>
 
@@ -197,7 +186,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
               <p className='text-muted-foreground'>Already have an account?</p>
               <Link
                 to={'/sign-in'}
-                className='font-medium text-textPrimary underline'
+                className='font-medium text-background underline'
               >
                 Login
               </Link>

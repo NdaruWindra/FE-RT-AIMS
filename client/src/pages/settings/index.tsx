@@ -9,7 +9,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
-  useFetchSignOutMutation,
+  useFetchRefreshTokenMutation,
   useFetchUpdateUserMutation,
 } from '@/features/user/userThunk'
 
@@ -20,7 +20,6 @@ import { useState } from 'react'
 import { useAppSelector } from '@/hooks/use-redux'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useNavigate } from 'react-router-dom'
 
 const FormSchema = z.object({
   username: z.string().min(2, {
@@ -33,12 +32,11 @@ const FormSchema = z.object({
 })
 
 export default function Settings() {
-  const { username, email, accessToken, isLoading, refreshToken } =
+  const { username, email, accessToken, refreshToken, isLoading } =
     useAppSelector((store) => store.user)
   const [fetchUpdateUser] = useFetchUpdateUserMutation()
-  const [fetchSignOut] = useFetchSignOutMutation()
+  const [fetchRefreshToken] = useFetchRefreshTokenMutation()
 
-  const navigate = useNavigate()
   const [isEditing, setIsEditing] = useState(false)
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -58,9 +56,9 @@ export default function Settings() {
       targetEmail: email,
       accessToken,
     })
-    await fetchSignOut(refreshToken)
 
-    navigate('/sign-in')
+    await fetchRefreshToken(refreshToken)
+
     setIsEditing(false)
   }
 

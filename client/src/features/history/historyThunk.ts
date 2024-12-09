@@ -1,5 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { setHistory, setIsLoading, setResults } from './historySlice'
+import {
+  setHistory,
+  setIsLoading,
+  setResults,
+  setSingleHistory,
+} from './historySlice'
 import { toast } from '@/components/ui/use-toast'
 
 export const historySlice = createApi({
@@ -142,7 +147,7 @@ export const historySlice = createApi({
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         try {
           dispatch(setIsLoading(true))
-          const result = await queryFulfilled
+          await queryFulfilled
 
           toast({
             description: 'Success delete history',
@@ -158,13 +163,75 @@ export const historySlice = createApi({
         }
       },
     }),
+
+    //! GET ALL HISTORY (ADMIN)
+    updateHistory: builder.mutation({
+      query: (data: any) => ({
+        url: `/history/${data.history_id}`,
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${data.accessToken}`,
+        },
+        body: {
+          title: data.title,
+        },
+      }),
+      invalidatesTags: ['histories'],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        try {
+          dispatch(setIsLoading(true))
+          await queryFulfilled
+
+          toast({
+            description: 'Success update history',
+            title: 'Success',
+          })
+        } catch (error) {
+          toast({
+            description: 'Error fetching all histories',
+            title: 'Error',
+            variant: 'destructive',
+          })
+          dispatch(setIsLoading(false))
+        }
+      },
+    }),
+
+    //! GET ALL HISTORY (ADMIN)
+    getSingleHistory: builder.query({
+      query: (data: any) => ({
+        url: `/history/${data.idHistory}`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${data.accessToken}`,
+        },
+      }),
+
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        dispatch(setIsLoading(true))
+        try {
+          const { data } = await queryFulfilled
+          dispatch(setSingleHistory(data.data))
+        } catch (error) {
+          toast({
+            description: 'Error fetching single histories',
+            title: 'Error',
+            variant: 'destructive',
+          })
+        } finally {
+          dispatch(setIsLoading(false))
+        }
+      },
+    }),
   }),
 })
 
 export const {
-  useGetHistoryQuery,
   usePostHistoryMutation,
   useUploadAudioMutation,
-  useGetAllHistoryQuery,
   useDeleteHistoryMutation,
+  useUpdateHistoryMutation,
+  useGetHistoryQuery,
+  useGetSingleHistoryQuery,
+  useGetAllHistoryQuery,
 } = historySlice

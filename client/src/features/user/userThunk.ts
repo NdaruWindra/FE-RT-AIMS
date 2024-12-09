@@ -77,6 +77,32 @@ export const dataSlice = createApi({
       },
     }),
 
+    //! SIGN IN GOOGLE ENDPOINT
+    fetchSignInGoogle: builder.mutation({
+      query: (access_token: any) => ({
+        url: `/user/google/userinfo?accessToken=${access_token}`,
+        method: 'GET',
+      }),
+      invalidatesTags: ['user'],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        try {
+          dispatch(setIsLoading(true))
+          const { data } = await queryFulfilled
+
+          dispatch(setProfile(data))
+          toast({ description: 'Login successful', title: 'Success' })
+        } catch (error: any) {
+          toast({
+            description: 'Error fetching Google user info',
+            title: 'Error',
+            variant: 'destructive',
+          })
+        } finally {
+          dispatch(setIsLoading(false))
+        }
+      },
+    }),
+
     //! REFRESH ENDPOINT
     fetchRefreshToken: builder.mutation({
       query: (refreshToken: string | undefined) => ({
@@ -210,4 +236,5 @@ export const {
   useFetchSignOutMutation,
   useFetchUpdateUserMutation,
   useFetchAllUsersQuery,
+  useFetchSignInGoogleMutation,
 } = dataSlice

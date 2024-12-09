@@ -53,6 +53,14 @@ const router = createBrowserRouter([
         }),
       },
       {
+        path: 'history/:idHistory',
+        lazy: async () => ({
+          Component: (
+            await import('@/pages/history/components/single-history.tsx')
+          ).default,
+        }),
+      },
+      {
         path: 'summarize',
         lazy: async () => ({
           Component: (await import('@/pages/summarize')).default,

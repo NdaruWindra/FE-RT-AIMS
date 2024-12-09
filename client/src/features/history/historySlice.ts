@@ -12,12 +12,19 @@ const initialState: IHistoryState = {
     pageSize: 10,
   },
 
+  filterBy: 'A-Z',
+
   singleHistory: {
     id_history: '',
     fileName: '',
     title: '',
     createdAt: '',
-    date: '',
+
+    result: {
+      id_result: '',
+      transcript: [],
+      summary: '',
+    },
   },
 
   result: {
@@ -58,6 +65,15 @@ export const historySlice = createSlice({
         state.paginationHistory.pageSize
       )
     },
+    setSingleHistory: function (state, { payload }) {
+      state.singleHistory.createdAt = payload.createdAt
+      state.singleHistory.title = payload.title
+      state.singleHistory.id_history = payload.id_history
+      state.singleHistory.result.id_result = payload.result.id_result
+      state.singleHistory.result.summary = payload.result.summary
+      state.singleHistory.result.transcript =
+        payload.result.transcript.split('-')
+    },
     setSearch: function (state, { payload }) {
       const histories = JSON.parse(JSON.stringify(state))
 
@@ -75,6 +91,45 @@ export const historySlice = createSlice({
     setIsLoading: function (state, { payload }) {
       state.isLoading = payload
     },
+    setFilter: (state, { payload }) => {
+      state.filterBy = payload
+
+      const histories = [...state.allHistory]
+
+      switch (payload) {
+        case 'A-Z':
+          histories.sort((a, b) => a.title.localeCompare(b.title))
+          break
+
+        case 'Z-A':
+          histories.sort((a, b) => b.title.localeCompare(a.title))
+          break
+
+        case 'NEWEST':
+          histories.sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+          break
+
+        case 'LATEST':
+          histories.sort(
+            (a, b) =>
+              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          )
+          break
+
+        default:
+          break
+      }
+
+      const startIndex =
+        (state.paginationHistory.currentPage - 1) *
+        state.paginationHistory.pageSize
+      const endIndex = startIndex + state.paginationHistory.pageSize
+
+      state.showedHistory = histories.slice(startIndex, endIndex)
+    },
   },
 })
 
@@ -83,7 +138,9 @@ export const {
   setResults,
   setIsLoading,
   setHistory,
+  setSingleHistory,
   setSearch,
+  setFilter,
 } = historySlice.actions
 
 export default historySlice.reducer

@@ -5,7 +5,7 @@ export type TSingleHistory = {
   title: string
   createdAt: string
   fileName: string
-  date: string
+  result: TSingleResult
 }
 
 export type TSingleUser = {
@@ -49,6 +49,7 @@ export interface IHistoryState {
   singleHistory: TSingleHistory
   allHistory: TSingleHistory[]
   showedHistory: TSingleHistory[]
+  filterBy: 'A-Z' | 'Z-A' | 'NEWEST' | 'LATEST'
 
   message: TMessage
 

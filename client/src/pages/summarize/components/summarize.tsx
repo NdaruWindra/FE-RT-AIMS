@@ -11,6 +11,15 @@ import {
 } from '@/features/history/historyThunk'
 import { toast } from '@/components/ui/use-toast'
 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+
 export function Summarize() {
   const [isRecording, setIsRecording] = useState(false)
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
@@ -92,7 +101,7 @@ export function Summarize() {
 
         const transcripts = data.transcript.segments
           ?.map((data: any) => data['text'].trim())
-          .join('')
+          .join('-')
 
         await postHistory({
           token: user?.accessToken,
@@ -122,127 +131,159 @@ export function Summarize() {
     }
   }, [])
 
+  useEffect(() => {
+    const unloadCallback = (event: any) => {
+      event.preventDefault()
+      event.returnValue = ''
+      return ''
+    }
+
+    window.addEventListener('beforeunload', unloadCallback)
+    return () => window.removeEventListener('beforeunload', unloadCallback)
+  }, [])
+
   return (
     <section>
-      <div className='space-y-5 md:flex md:flex-row md:space-x-5 md:space-y-0'>
-        <div className='flex h-fit flex-col items-center space-y-4 overflow-y-auto rounded-lg bg-colorPrimary p-6  dark:bg-primary md:w-1/2'>
-          <h2 className='font-bold text-white dark:text-colorPrimary md:text-lg lg:text-2xl'>
-            Record Audio
-          </h2>
-          {[
-            {
-              onClick: isRecording ? handleStopRecording : handleStartRecording,
-              className: `rounded-full p-5 ${isRecording ? 'bg-red-600 hover:bg-red-700' : 'dark:bg-colorPrimary dark:hover:bg-colorPrimary-dark'}`,
-              content: isRecording ? <FaSquare /> : <FaMicrophone />,
-              disabled: history.isLoading,
-            },
-          ].map(function renderButton(buttonData, index) {
-            const { onClick, className, content, disabled } = buttonData
+      <div className='flex flex-col gap-3'>
+        <div className='flex flex-col items-center gap-5 lg:flex-row'>
+          <div className='flex h-fit w-96 flex-col items-center space-y-4 overflow-y-auto rounded-lg bg-colorPrimary p-3  dark:bg-primary'>
+            <h2 className='font-bold text-white dark:text-colorPrimary md:text-lg lg:text-xl'>
+              Record Audio
+            </h2>
+            {[
+              {
+                onClick: isRecording
+                  ? handleStopRecording
+                  : handleStartRecording,
+                className: `rounded-full p-5 ${isRecording ? 'bg-red-600 hover:bg-red-700' : 'dark:bg-colorPrimary dark:hover:bg-colorPrimary-dark'}`,
+                content: isRecording ? <FaSquare /> : <FaMicrophone />,
+                disabled: history.isLoading,
+              },
+            ].map(function renderButton(buttonData, index) {
+              const { onClick, className, content, disabled } = buttonData
 
-            return (
-              <Button
-                key={index}
-                onClick={onClick}
-                className={className}
-                disabled={disabled}
-              >
-                {content}
-              </Button>
-            )
-          })}
+              return (
+                <Button
+                  key={index}
+                  onClick={onClick}
+                  className={className}
+                  disabled={disabled}
+                >
+                  {content}
+                </Button>
+              )
+            })}
 
-          {audioUrl && (
-            <div className='flex w-full flex-col items-center space-y-4'>
-              <h2 className='text-xl font-bold text-colorPrimary md:text-2xl'>
-                Recording Result
-              </h2>
-              <audio controls src={audioUrl} className='w-3/4' />
+            {audioUrl && (
+              <div className='flex w-full flex-col items-center space-y-4'>
+                <h2 className='text-xl font-bold text-colorPrimary md:text-2xl'>
+                  Recording Result
+                </h2>
+                <audio controls src={audioUrl} className='w-3/4' />
 
-              <div className='flex space-x-3'>
-                {[
-                  {
-                    onClick: handleDownload,
-                    bgColor: 'bg-blue-500 hover:bg-blue-600',
-                    Icon: IoMdDownload,
-                  },
-                  {
-                    onClick: handleResetAudio,
-                    bgColor: 'bg-red-500 hover:bg-red-600',
-                    Icon: GrPowerReset,
-                    disabled: history.isLoading,
-                  },
-                ].map(function (buttonData, index) {
-                  const { onClick, bgColor, Icon, disabled } = buttonData
-                  return (
-                    <Button
-                      key={index}
-                      onClick={onClick}
-                      className={`rounded-full p-3  text-white ${bgColor}`}
-                      disabled={disabled}
-                    >
-                      <Icon />
-                    </Button>
-                  )
-                })}
+                <div className='flex space-x-3'>
+                  {[
+                    {
+                      onClick: handleDownload,
+                      bgColor: 'bg-blue-500 hover:bg-blue-600',
+                      Icon: IoMdDownload,
+                    },
+                    {
+                      onClick: handleResetAudio,
+                      bgColor: 'bg-red-500 hover:bg-red-600',
+                      Icon: GrPowerReset,
+                      disabled: history.isLoading,
+                    },
+                  ].map(function (buttonData, index) {
+                    const { onClick, bgColor, Icon, disabled } = buttonData
+                    return (
+                      <Button
+                        key={index}
+                        onClick={onClick}
+                        className={`rounded-full p-3  text-white ${bgColor}`}
+                        disabled={disabled}
+                      >
+                        <Icon />
+                      </Button>
+                    )
+                  })}
+                </div>
+                <Button
+                  onClick={handleSummarize}
+                  disabled={history.isLoading}
+                  className='bg-blue-500 font-semibold text-white hover:bg-blue-600'
+                >
+                  Summarize
+                </Button>
               </div>
-              <Button
-                onClick={handleSummarize}
-                disabled={history.isLoading}
-                className='bg-blue-500 font-semibold text-white hover:bg-blue-600'
-              >
-                Summarize
-              </Button>
+            )}
+          </div>
+          {history.isLoading && (
+            <div className='mx-auto mt-5 flex flex-col items-center space-y-2'>
+              <FaSpinner className='animate-spin text-4xl text-colorSecondary dark:text-white' />
+              <p className='text-lg text-colorSecondary dark:text-white'>
+                Process Summarize...
+              </p>
             </div>
           )}
         </div>
 
-        <div className='flex h-fit flex-col space-y-7 overflow-y-auto rounded-lg bg-colorPrimary p-6 dark:bg-primary md:w-1/2'>
-          <h1 className='text-center text-xl font-bold text-white dark:text-colorPrimary md:text-2xl'>
-            Result
-          </h1>
-          {history.isLoading ? (
-            <div className='flex flex-col items-center space-y-2'>
-              <FaSpinner className='animate-spin text-4xl text-white dark:text-colorSecondary' />
-              <p className='text-lg text-white dark:text-colorSecondary'>
-                Process Summarize...
-              </p>
-            </div>
-          ) : history.result?.summary ? (
-            <div className='scrollbar-custom max-h-[400px] space-y-4 overflow-y-auto p-2'>
-              <div>
-                <h2 className='text-lg font-semibold text-white dark:text-colorPrimary'>
-                  Transcript:
-                </h2>
-                {history.result?.transcript.map(function (data: any, index) {
-                  return (
-                    <p
-                      key={index}
-                      className='text-justify text-lg text-white dark:text-colorSecondary'
-                    >
-                      - {data?.text}
-                    </p>
-                  )
-                })}
+        <div className='mb-5 flex h-fit flex-col items-start overflow-y-auto rounded-lg'>
+          {history.result?.summary ? (
+            <div className='flex flex-col gap-5 lg:flex-row-reverse'>
+              {/* TRANSCRIPT */}
+
+              <div className='flex flex-col  lg:w-1/2'>
+                <h1 className='text-start text-xl font-bold text-white dark:text-colorPrimary md:text-2xl'>
+                  Transcript
+                </h1>
+                <div className=' h-96 overflow-auto rounded-2xl border border-gray-300 '>
+                  <Table>
+                    <TableHeader className=' bg-gray-800'>
+                      <TableRow>
+                        <TableHead className='text-center'>No</TableHead>
+                        <TableHead className='py-2 text-center'>
+                          Transcript
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {history.result?.transcript.map(
+                        (data: any, index: number) => (
+                          <TableRow key={index} className='h-14'>
+                            <TableCell className='py-2 text-center'>
+                              {index + 1}.
+                            </TableCell>
+                            <TableCell className='py-2 text-justify'>
+                              {data.text}
+                            </TableCell>
+                          </TableRow>
+                        )
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
               </div>
-              <div>
-                <h2 className='text-lg font-semibold text-colorPrimary'>
-                  Summary:
-                </h2>
-                <p className='text-justify text-lg text-white dark:text-colorSecondary'>
+              {/* SUMMARY */}
+
+              <div className='flex flex-col lg:w-1/2'>
+                <h1 className=' text-xl font-bold text-white dark:text-colorPrimary md:text-2xl'>
+                  Summary
+                </h1>
+                <p className='text-justify text-base  text-colorSecondary dark:text-white'>
                   {history.result?.summary}
                 </p>
+
+                <Button
+                  onClick={handleClearResult}
+                  className='my-5 w-fit bg-red-500 font-semibold text-white hover:bg-red-600'
+                >
+                  Clear Result
+                </Button>
               </div>
-              <Button
-                onClick={handleClearResult}
-                className='bg-red-500 font-semibold text-white hover:bg-red-600'
-              >
-                Clear Result
-              </Button>
             </div>
           ) : (
-            <p className='text-center text-muted-foreground lg:text-lg'>
-              No results displayed
-            </p>
+            ''
           )}
         </div>
       </div>

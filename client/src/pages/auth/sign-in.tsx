@@ -1,11 +1,11 @@
-import { UserAuthForm } from './components/user-auth-form'
+import { UserAuthForm } from './components/sign-in-form'
 import Banner from './components/banner'
 import { imageIL } from '@/components/assets/images'
 
 export default function SignIn() {
   return (
     <>
-      <div className='container flex justify-between h-screen md:gap-10'>
+      <div className='container flex h-screen justify-between bg-white md:gap-10'>
         {/* Banner */}
         <Banner />
 
@@ -17,7 +17,7 @@ export default function SignIn() {
             </div>
           </div>
           <div className='space-y-2 text-center'>
-            <h1 className='text-2xl font-semibold tracking-tight text-textPrimary'>
+            <h1 className='text-2xl font-semibold tracking-tight text-background'>
               Welcome Back to Infinite Learning
             </h1>
             <p className='text-sm text-muted-foreground'>

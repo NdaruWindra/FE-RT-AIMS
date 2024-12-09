@@ -52,14 +52,14 @@ export function Upload({ onClose }: UploadProps) {
         onClose()
         const { data } = await uploadAudio(file)
 
-        const transcripts = data.transcript.segments
+        const transcript = data.transcript.segments
           ?.map((data: any) => data['text'].trim())
-          .join('')
+          .join('-')
 
         await postHistory({
           token: user?.accessToken,
           summary: data.summary,
-          transcript: transcripts,
+          transcript,
           title: `${Date.now()}${file.name}`,
         })
       }

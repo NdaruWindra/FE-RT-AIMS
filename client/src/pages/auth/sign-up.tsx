@@ -5,7 +5,7 @@ import Banner from './components/banner'
 export default function SignUp() {
   return (
     <>
-      <div className='container flex justify-between h-screen md:gap-10'>
+      <div className='container flex h-screen justify-between bg-white md:gap-10'>
         {/* Header */}
         <div className='mx-auto flex flex-col justify-center space-y-4'>
           <div className='mt-5 flex justify-center '>
@@ -14,7 +14,7 @@ export default function SignUp() {
             </div>
           </div>
           <div className='space-y-2 text-center'>
-            <h1 className='text-2xl font-medium tracking-tight text-textPrimary'>
+            <h1 className='text-2xl font-medium tracking-tight text-background'>
               Create an account
             </h1>
             <p className='text-sm text-muted-foreground'>

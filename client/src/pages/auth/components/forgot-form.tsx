@@ -33,7 +33,6 @@ export function ForgotForm({ className, ...props }: ForgotFormProps) {
 
   function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    console.log(data)
 
     setTimeout(() => {
       setIsLoading(false)
@@ -58,7 +57,10 @@ export function ForgotForm({ className, ...props }: ForgotFormProps) {
                 </FormItem>
               )}
             />
-            <Button className='mt-2 bg-colorPrimary text-primary hover:text-textPrimary' loading={isLoading}>
+            <Button
+              className='mt-2 bg-colorPrimary text-primary hover:text-textPrimary'
+              loading={isLoading}
+            >
               Continue
             </Button>
           </div>
