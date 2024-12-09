@@ -20,7 +20,7 @@ export function PaginationHistory({ data }: { data: TSingleHistory[] }) {
   })
   const dispatch = useAppDispatch()
 
-  if (data.length === 0) {
+  if (data?.length === 0) {
     return
   }
 
@@ -29,6 +29,7 @@ export function PaginationHistory({ data }: { data: TSingleHistory[] }) {
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
+            className='cursor-pointer'
             onClick={() =>
               dispatch(
                 setCurrentPage(currentPage <= 1 ? totalPage : currentPage - 1)
@@ -48,6 +49,7 @@ export function PaginationHistory({ data }: { data: TSingleHistory[] }) {
         {getVisiblePages(currentPage, totalPage).map((page) => (
           <PaginationItem key={page}>
             <PaginationLink
+              className='cursor-pointer'
               isActive={page === currentPage}
               onClick={() => dispatch(setCurrentPage(page))}
             >
@@ -64,6 +66,7 @@ export function PaginationHistory({ data }: { data: TSingleHistory[] }) {
 
         <PaginationItem>
           <PaginationNext
+            className='cursor-pointer'
             onClick={() =>
               dispatch(
                 setCurrentPage(currentPage === totalPage ? 1 : currentPage + 1)

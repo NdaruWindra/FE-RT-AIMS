@@ -226,6 +226,33 @@ export const dataSlice = createApi({
         }
       },
     }),
+
+    //! DELETE USER
+    fetchDeleteUser: builder.mutation({
+      query: ({ id, accessToken }: { id: string; accessToken?: string }) => ({
+        url: `/user/${id}`,
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }),
+      invalidatesTags: ['user'],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        try {
+          const { data } = await queryFulfilled
+          toast({
+            title: 'Success',
+            description: data.message,
+          })
+        } catch (error: any) {
+          toast({
+            title: 'Error',
+            description: error.error?.data?.message,
+            variant: 'destructive',
+          })
+        }
+      },
+    }),
   }),
 })
 
@@ -237,4 +264,5 @@ export const {
   useFetchUpdateUserMutation,
   useFetchAllUsersQuery,
   useFetchSignInGoogleMutation,
+  useFetchDeleteUserMutation,
 } = dataSlice

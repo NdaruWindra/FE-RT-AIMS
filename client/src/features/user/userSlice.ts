@@ -69,6 +69,10 @@ export const userSlice = createSlice({
       state.isAuthenticated = false
       state.isLoading = false
     },
+    removeUser: function (state, { payload }) {
+      // Menghapus user dari state.allUser berdasarkan id
+      state.allUser = state.allUser.filter(user => user.id !== payload);
+    },
   },
 })
 
@@ -78,6 +82,7 @@ export const {
   setIsLoading,
   setAllUsers,
   setRemoveProfile,
+  removeUser,
 } = userSlice.actions
 
 export default userSlice.reducer

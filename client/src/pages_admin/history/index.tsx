@@ -14,7 +14,7 @@ import { TableHistory } from './components/table'
 import { useAppSelector } from '@/hooks/use-redux'
 import { PaginationHistory } from './components/pagination-history'
 import { Edit } from './components/edit'
-import { useFetchAllUsersQuery } from '@/features/user/userThunk'
+import { useFetchAllUsersQuery, useFetchDeleteUserMutation } from '@/features/user/userThunk'
 
 export default function ProductTable() {
   const [isEditOpen, setIsEditOpen] = useState(false)
@@ -25,15 +25,25 @@ export default function ProductTable() {
   const [sortOrder, setSortOrder] = useState('')
 
   const user = useAppSelector((state) => state.user)
-  const history = useAppSelector((state) => state.history)
-  const { data } = useFetchAllUsersQuery(user.accessToken)
+  const { data, refetch } = useFetchAllUsersQuery(user.accessToken) 
+  const [deleteUser] = useFetchDeleteUserMutation()
 
-  // Mengatur urutan sort
+
+  const handleDeleteClick = async (id: string) => {
+    try {
+      await deleteUser({ id, accessToken: user.accessToken }).unwrap()
+      alert('User deleted successfully')
+      refetch()
+    } catch (error) {
+      console.error('Failed to delete user:', error)
+      alert('Failed to delete user')
+    }
+  }
+
   const handleSortChange = (value: string) => {
     setSortOrder(value)
   }
 
-  // Mengatur data pengguna yang akan diedit dan membuka modal
   const handleEditClick = (data: { username: string; email: string }) => {
     setEditingData(data)
     setIsEditOpen(true)
@@ -46,8 +56,8 @@ export default function ProductTable() {
   }
 
   return (
-    <div className='relative w-full shadow-md sm:rounded-lg'>
-      <h1 className='text-2xl font-bold'>My History</h1>
+    <div className='relative mt-10 w-full shadow-md sm:rounded-lg'>
+      <h1 className='text-2xl font-bold'>User Management</h1>
 
       <Separator className='my-4' />
 
@@ -60,6 +70,8 @@ export default function ProductTable() {
             <SelectGroup>
               <SelectItem value='a-z'>A-Z</SelectItem>
               <SelectItem value='z-a'>Z-A</SelectItem>
+              <SelectItem value='newest'>Date (Newest)</SelectItem>
+              <SelectItem value='latest'>Date (Latest)</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -67,20 +79,24 @@ export default function ProductTable() {
         <Search />
       </div>
 
-      {/* Tabel pengguna */}
       <TableHistory
         data={user.allUser}
         onEdit={handleEditClick}
+        onDelete={handleDeleteClick} 
         sortOrder={sortOrder}
       />
 
       {/* Modal Edit */}
       {isEditOpen && editingData && (
-        <Edit onClose={handleCloseEdit} initialData={editingData} />
+        <Edit
+          onClose={handleCloseEdit}
+          initialData={editingData}
+        />
       )}
 
-      {/* Pagination */}
-      <PaginationHistory data={history.allHistory} />
+      <PaginationHistory
+        data={data?.data}
+      />
     </div>
   )
 }

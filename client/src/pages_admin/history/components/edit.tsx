@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { Button } from '@/components/custom/button'
 import { useForm } from 'react-hook-form'
 import { Form } from '@/components/ui/form'
 import { FormSettings } from './form-settings'
-import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
+import { useAppSelector } from '@/hooks/use-redux'
 import { useFetchUpdateUserMutation } from '@/features/user/userThunk'
 
 interface EditProps {
@@ -12,26 +12,24 @@ interface EditProps {
 }
 
 export function Edit({ onClose, initialData }: EditProps) {
-  const token = useAppSelector((state) => state.user.refreshToken)
-  const dispatch = useAppDispatch()
+  const user = useAppSelector((state) => state.user)
 
   const [fetchUpdateUser] = useFetchUpdateUserMutation()
 
   const form = useForm({
     defaultValues: {
       username: initialData.username,
-      email: initialData.email,
-      targetEmail: initialData.email,
+      newEmail: '',
     },
   })
 
   const handleSaveChanges = async (data: any) => {
     await fetchUpdateUser({
-      accessToken: token,
+      accessToken: user.accessToken,
       data: {
-        username: data.username, // Tetap gunakan "username" sesuai input form
+        username: data.username,
         email: data.email,
-        targetEmail: data.targetEmail, // Target email untuk update
+        targetEmail: data.targetEmail,
       },
     })
 
@@ -41,8 +39,7 @@ export function Edit({ onClose, initialData }: EditProps) {
   useEffect(() => {
     form.reset({
       username: initialData.username,
-      email: initialData.email,
-      targetEmail: initialData.email,
+      newEmail: initialData.email,
     })
   }, [initialData, form])
 
@@ -69,7 +66,7 @@ export function Edit({ onClose, initialData }: EditProps) {
             />
             <FormSettings
               control={form.control}
-              name='targetEmail'
+              name='newEmail'
               label='Email'
               placeholder='Your Email'
             />
@@ -80,7 +77,7 @@ export function Edit({ onClose, initialData }: EditProps) {
               onClick={form.handleSubmit(handleSaveChanges)}
               className='w-28 bg-colorPrimary text-primary hover:text-textPrimary'
             >
-              Save Changes
+              {user.isLoading ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>
         </Form>

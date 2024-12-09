@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Table,
@@ -13,10 +14,11 @@ import { useNavigate } from 'react-router-dom'
 interface TableHistoryProps {
   data: TSingleUser[]
   onEdit: (user: { username: string; email: string }) => void
+  onDelete: (id: string) => void
   sortOrder: string
 }
 
-export function TableHistory({ data, onEdit, sortOrder }: TableHistoryProps) {
+export function TableHistory({ data, onEdit, onDelete, sortOrder }: TableHistoryProps) {
   const navigate = useNavigate()
 
   const handleNameClick = (username: string) => {
@@ -57,41 +59,39 @@ export function TableHistory({ data, onEdit, sortOrder }: TableHistoryProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedData.map(function (user: any) {
-            return (
-              <TableRow
-                key={user.user_id}
-                className='h-14 hover:cursor-pointer'
+          {sortedData.map((user) => (
+            <TableRow key={user.user_id} className='h-14 hover:cursor-pointer'>
+              <TableCell className='px-4 py-2'>
+                <Checkbox />
+              </TableCell>
+              <TableCell
+                className='cursor-pointer px-4 py-2 font-medium text-blue-600 hover:underline'
+                onClick={() => handleNameClick(user.username)}
               >
-                <TableCell className='px-4 py-2'>
-                  <Checkbox />
-                </TableCell>
-                <TableCell
-                  className='cursor-pointer px-4 py-2 font-medium text-blue-600 hover:underline'
-                  onClick={() => handleNameClick(user.username)}
+                {user.username}
+              </TableCell>
+              <TableCell className='px-4 py-2 text-center'>
+                {user.history?.length}
+              </TableCell>
+              <TableCell className='px-4 py-2'>{user.email}</TableCell>
+              <TableCell className='space-x-2 px-4 py-2 text-right'>
+                <Button
+                  onClick={() => onEdit({ username: user.username, email: user.email })}
+                  variant={'ghost'}
+                  className='text-blue-600 hover:bg-transparent hover:underline'
                 >
-                  {user.username}
-                </TableCell>
-                <TableCell className='px-4 py-2 text-center'>
-                  {user.history?.length}
-                </TableCell>
-                <TableCell className='px-4 py-2'>{user.email}</TableCell>
-                <TableCell className='space-x-2 px-4 py-2 text-right'>
-                  <button
-                    onClick={() =>
-                      onEdit({ username: user.username, email: user.email })
-                    }
-                    className='text-blue-600 hover:underline'
-                  >
-                    Edit
-                  </button>
-                  <a href='#' className='text-red-600 hover:underline'>
-                    Delete
-                  </a>
-                </TableCell>
-              </TableRow>
-            )
-          })}
+                  Edit
+                </Button>
+                <Button
+                  onClick={() => onDelete(user.user_id)}
+                  variant={'ghost'}
+                  className='text-red-600 hover:bg-transparent hover:underline'
+                >
+                  Delete
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </div>

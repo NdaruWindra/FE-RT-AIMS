@@ -112,7 +112,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     if (!isAuthenticated && refreshToken) {
       initialRender()
     }
-  }, [])
+  }, [isAuthenticated, refreshToken]) // Tambahkan dependensi
 
   return (
     <div className={cn('grid gap-6', className)} {...props}>
@@ -120,6 +120,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
           {/* Input Fields */}
           <div className='grid gap-2 space-y-3'>
+            {/* Input Email */}
             <FormField
               control={form.control}
               disabled={isLoading}
@@ -170,6 +171,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               )}
             />
 
+            {/* Button Sign In */}
             <Button
               type='submit'
               className='bg-colorPrimary text-primary hover:text-textPrimary'

@@ -134,7 +134,7 @@ export const historySlice = createApi({
       },
     }),
 
-    //! GET ALL HISTORY (ADMIN)
+    //! DELETE (ADMIN)
     deleteHistory: builder.mutation({
       query: (data: any) => ({
         url: `/history/${data.history_id}`,

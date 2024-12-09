@@ -1,4 +1,5 @@
 import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -7,7 +8,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useDeleteHistoryMutation } from '@/features/history/historyThunk';
 import { TSingleHistory } from '@/utils/type';
+import { useAppSelector } from '@/hooks/use-redux';
 
 interface TableHistoryProps {
   data: TSingleHistory[];
@@ -15,6 +18,13 @@ interface TableHistoryProps {
 }
 
 export function TableHistory({ data, sortOrder }: TableHistoryProps) {
+  const { accessToken } = useAppSelector((store) => store.user);
+  const [deleteHistory] = useDeleteHistoryMutation();
+
+  const handleDelete = async (id: string) => {
+    await deleteHistory({ accessToken, history_id: id });
+  };
+
   // Fungsi untuk mengurutkan data
   const sortedData = [...data].sort((a, b) => {
     if (sortOrder === 'a-z') {
@@ -39,7 +49,7 @@ export function TableHistory({ data, sortOrder }: TableHistoryProps) {
 
   return (
     <div className='mt-5 overflow-hidden rounded-2xl border border-gray-300'>
-      <Table className='w-full '>
+      <Table className='w-full'>
         <TableHeader className='bg-gray-700'>
           <TableRow>
             <TableHead className='px-4 py-2'>
@@ -53,7 +63,7 @@ export function TableHistory({ data, sortOrder }: TableHistoryProps) {
         </TableHeader>
         <TableBody>
           {sortedData.map((history) => (
-            <TableRow key={history.id_history} className='h-14 hover:cursor-pointer'>
+            <TableRow key={history.id} className='h-14 hover:cursor-pointer'>
               <TableCell className='px-4 py-2'>
                 <Checkbox />
               </TableCell>
@@ -61,9 +71,13 @@ export function TableHistory({ data, sortOrder }: TableHistoryProps) {
               <TableCell className='px-4 py-2 text-center'>00:20</TableCell>
               <TableCell className='px-4 py-2'>{history.date}</TableCell>
               <TableCell className='space-x-2 px-4 py-2 text-right'>
-                <a href='#' className='text-red-600 hover:underline'>
+                <Button
+                  onClick={() => handleDelete(history.id)}
+                  variant='ghost'
+                  className='text-red-600 hover:bg-transparent hover:underline'
+                >
                   Delete
-                </a>
+                </Button>
               </TableCell>
             </TableRow>
           ))}
