@@ -2,6 +2,7 @@ import { IconType } from 'react-icons/lib'
 
 export type TSingleHistory = {
   id_history: string
+  id: string
   title: string
   createdAt: string
   fileName: string

@@ -203,25 +203,25 @@ export const dataSlice = createApi({
 
     //! DELETE USER
 fetchDeleteUser: builder.mutation({
-  query: ({ id, accessToken }: { id: string; accessToken: string }) => ({
-    url: `/user/${id}`, // Endpoint REST API untuk menghapus user berdasarkan ID
+  query: ({ id, accessToken }: { id: string; accessToken?: string }) => ({
+    url: `/user/${id}`, 
     method: 'DELETE',
     headers: {
-      Authorization: `Bearer ${accessToken}`, // Token akses untuk otorisasi
+      Authorization: `Bearer ${accessToken}`, 
     },
   }),
-  invalidatesTags: ['user'], // Menyegarkan cache setelah operasi delete
+  invalidatesTags: ['user'], 
   onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
     try {
       const { data } = await queryFulfilled;
       toast({
         title: 'Success',
-        description: data.message, // Menampilkan pesan sukses
+        description: data.message, 
       });
     } catch (error: any) {
       toast({
         title: 'Error',
-        description: error.error?.data?.message, // Menampilkan pesan error
+        description: error.error?.data?.message, 
         variant: 'destructive',
       });
     }
