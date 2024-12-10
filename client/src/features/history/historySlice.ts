@@ -15,11 +15,12 @@ const initialState: IHistoryState = {
   filterBy: 'A-Z',
 
   singleHistory: {
+    id: '',
+    id_users: '',
     id_history: '',
     fileName: '',
     title: '',
     createdAt: '',
-
     result: {
       id_result: '',
       transcript: [],
@@ -53,28 +54,29 @@ export const historySlice = createSlice({
 
       state.showedHistory = state.allHistory.slice(startIndex, endIndex)
     },
-    setResults: function (state, { payload }) {
+    setResults: (state, { payload }) => {
       state.result.summary = payload.summary
       state.result.transcript = payload.transcript.segments
     },
-    setHistory: function (state, { payload }) {
+    setHistory: (state, { payload }) => {
       state.allHistory = payload.data
       state.paginationHistory.totalPage = Math.ceil(payload.data.length / 10)
       state.showedHistory = payload.data.slice(
-        state.paginationHistory.currentPage - 1,
+        (state.paginationHistory.currentPage - 1) * state.paginationHistory.pageSize,
         state.paginationHistory.pageSize
       )
     },
-    setSingleHistory: function (state, { payload }) {
-      state.singleHistory.createdAt = payload.createdAt
+    setSingleHistory: (state, { payload }) => {
+      state.singleHistory.id = payload.id_history
+      state.singleHistory.id_users = payload.id_users
+      state.singleHistory.fileName = payload.fileName
       state.singleHistory.title = payload.title
-      state.singleHistory.id_history = payload.id_history
+      state.singleHistory.createdAt = payload.createdAt
       state.singleHistory.result.id_result = payload.result.id_result
       state.singleHistory.result.summary = payload.result.summary
-      state.singleHistory.result.transcript =
-        payload.result.transcript.split('-')
+      state.singleHistory.result.transcript = payload.result.transcript.split('-')
     },
-    setSearch: function (state, { payload }) {
+    setSearch: (state, { payload }) => {
       const histories = JSON.parse(JSON.stringify(state))
 
       const historySearch = histories.allHistory.filter((history: any) => {
@@ -84,11 +86,11 @@ export const historySlice = createSlice({
       state.paginationHistory.totalPage = Math.ceil(historySearch.length / 10)
 
       state.showedHistory = historySearch.slice(
-        state.paginationHistory.currentPage - 1,
+        (state.paginationHistory.currentPage - 1) * state.paginationHistory.pageSize,
         state.paginationHistory.pageSize
       )
     },
-    setIsLoading: function (state, { payload }) {
+    setIsLoading: (state, { payload }) => {
       state.isLoading = payload
     },
     setFilter: (state, { payload }) => {
@@ -107,15 +109,13 @@ export const historySlice = createSlice({
 
         case 'NEWEST':
           histories.sort(
-            (a, b) =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           )
           break
 
         case 'LATEST':
           histories.sort(
-            (a, b) =>
-              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+            (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
           )
           break
 

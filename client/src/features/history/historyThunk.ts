@@ -110,10 +110,9 @@ export const historySlice = createApi({
       },
     }),
 
-    //! GET ALL HISTORY (ADMIN)
     getAllHistory: builder.query({
-      query: (token: string | undefined) => ({
-        url: `/history`,
+      query: ({ data, token }) => ({
+        url: `/history/all/${data.user_id}`,
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -122,17 +121,24 @@ export const historySlice = createApi({
       providesTags: ['histories'],
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         try {
-          const { data } = await queryFulfilled
-          dispatch(setHistory(data))
+          const { data } = await queryFulfilled;
+          if (data && data.id) {
+            dispatch(setHistory(data));
+          } else {
+            console.error('Data tidak memiliki properti id yang diharapkan.');
+          }
         } catch (error) {
           toast({
             description: 'Error fetching all histories',
             title: 'Error',
             variant: 'destructive',
-          })
+          });
         }
       },
     }),
+    
+    
+
 
     //! DELETE (ADMIN)
     deleteHistory: builder.mutation({
