@@ -21,8 +21,8 @@ interface TableHistoryProps {
 export function TableHistory({ data, onEdit, onDelete, sortOrder }: TableHistoryProps) {
   const navigate = useNavigate()
 
-  const handleNameClick = (username: string) => {
-    navigate(`/dashboard-admin/history-detail-admin`, { state: { username } })
+  const handleNameClick = (user_id : string) => {
+    navigate(`/dashboard-admin/history-detail-admin/${user_id}`)
   }
 
   // Sorting the data based on sortOrder
@@ -66,7 +66,8 @@ export function TableHistory({ data, onEdit, onDelete, sortOrder }: TableHistory
               </TableCell>
               <TableCell
                 className='cursor-pointer px-4 py-2 font-medium text-blue-600 hover:underline'
-                onClick={() => handleNameClick(user.username)}
+                onClick={() => handleNameClick(user.user_id)}
+                
               >
                 {user.username}
               </TableCell>

@@ -32,9 +32,9 @@ export function TableHistory({ data, sortOrder }: TableHistoryProps) {
     } else if (sortOrder === 'z-a') {
       return b.title.localeCompare(a.title);
     } else if (sortOrder === 'newest') {
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     } else if (sortOrder === 'latest') {
-      return new Date(a.date).getTime() - new Date(b.date).getTime();
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
     }
     return 0;
   });

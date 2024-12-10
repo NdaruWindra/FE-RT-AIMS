@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams  } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { Search } from '@/components/search'
 import {
@@ -16,13 +16,21 @@ import { useAppSelector } from '@/hooks/use-redux'
 import { PaginationHistory } from './components/pagination-history'
 import { useGetAllHistoryQuery } from '@/features/history/historyThunk'
 
+
+
 export default function ProductTable() {
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('user_id');
+  // const { data: historyData } = useGetAllHistoryQuery(user_id);
+
   const [sortOrder, setSortOrder] = useState('')
   const navigate = useNavigate()
   const user = useAppSelector((state) => state.user)
   const history = useAppSelector((state) => state.history)
 
-  const data = useGetAllHistoryQuery(user.accessToken)
+  const data = useGetAllHistoryQuery(id)
+  
+  
 
   const handleSortChange = (value: string) => {
     setSortOrder(value)
