@@ -10,9 +10,23 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useAppSelector } from '@/hooks/use-redux'
+import { Link, useNavigate } from 'react-router-dom'
+import { useFetchSignOutMutation } from '@/features/user/userThunk'
 
 export function UserNav() {
-  const { username, email } = useAppSelector((store) => store.user)
+  const { username, email, refreshToken } = useAppSelector(function (store) {
+    return store.user
+  })
+  const [fetchSignOut] = useFetchSignOutMutation()
+
+  const navigate = useNavigate()
+
+  async function handleLogOut() {
+    if (refreshToken) {
+      await fetchSignOut(refreshToken)
+      navigate('/sign-in')
+    }
+  }
 
   return (
     <DropdownMenu>
@@ -35,11 +49,12 @@ export function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>Profile</DropdownMenuItem>
-          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuItem>
+            <Link to='/dashboard/settings'>Settings</Link>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Log out</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleLogOut}>Log out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

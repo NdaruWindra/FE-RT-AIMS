@@ -16,9 +16,7 @@ export default function Sidebar() {
   const { refreshToken, isLoading } = useAppSelector(function (store) {
     return store.user
   })
-  const history = useAppSelector(function (store) {
-    return store.history
-  })
+
   const [fetchSignOut] = useFetchSignOutMutation()
 
   function handleSidebar(sidebar: boolean) {

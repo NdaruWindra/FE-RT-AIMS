@@ -1,4 +1,4 @@
-import { HTMLAttributes, useState } from 'react'
+import { HTMLAttributes, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -13,6 +13,12 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import {
+  useFetchRefreshTokenMutation,
+  useFetchSendTokenPasswordMutation,
+} from '@/features/user/userThunk'
+import { useAppSelector } from '@/hooks/use-redux'
+import { useNavigate } from 'react-router-dom'
 
 interface ForgotFormProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -24,20 +30,42 @@ const formSchema = z.object({
 })
 
 export function ForgotForm({ className, ...props }: ForgotFormProps) {
-  const [isLoading, setIsLoading] = useState(false)
+  const { isAuthenticated, refreshToken, isLoading } = useAppSelector(
+    (state) => state.user
+  )
+
+  const [fetchRefreshToken] = useFetchRefreshTokenMutation()
+  const [fetchSendTokenPassword] = useFetchSendTokenPasswordMutation()
+
+  const navigate = useNavigate()
+
+  async function initialRender() {
+    if (refreshToken) {
+      const resultData = await fetchRefreshToken(refreshToken).unwrap()
+
+      if (resultData.status === 'success') {
+        if (resultData?.data.role?.toLowerCase() === 'user')
+          return navigate('/dashboard')
+        if (resultData?.data.role?.toLowerCase() === 'admin')
+          return navigate('/dashboard-admin')
+      }
+    }
+  }
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: '' },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    setIsLoading(true)
-
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 3000)
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    await fetchSendTokenPassword(data.email)
   }
+
+  useEffect(() => {
+    if (!isAuthenticated && refreshToken) {
+      initialRender()
+    }
+  }, [isAuthenticated, refreshToken]) // Tambahkan dependensi
 
   return (
     <div className={cn('grid gap-6', className)} {...props}>
@@ -59,9 +87,9 @@ export function ForgotForm({ className, ...props }: ForgotFormProps) {
             />
             <Button
               className='mt-2 bg-colorPrimary text-primary hover:text-textPrimary'
-              loading={isLoading}
+              disabled={isLoading}
             >
-              Continue
+              {isLoading ? 'Loading...' : 'Continue'}{' '}
             </Button>
           </div>
         </form>

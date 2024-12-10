@@ -227,6 +227,72 @@ export const dataSlice = createApi({
       },
     }),
 
+    //! SEND TOKEN TO EMAIL
+    fetchSendTokenPassword: builder.mutation({
+      query: (email: string) => ({
+        url: `/user/forgetPassword`,
+        method: 'POST',
+        body: {
+          email,
+        },
+      }),
+      invalidatesTags: ['user'],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        try {
+          dispatch(setIsLoading(true))
+          const { data } = await queryFulfilled
+
+          console.log(data)
+
+          toast({
+            title: 'Success',
+            description: data.message,
+          })
+          dispatch(setIsLoading(false))
+        } catch (error: any) {
+          console.log(error)
+          toast({
+            description: error.error?.data?.message,
+            title: 'Error',
+            variant: 'destructive',
+          })
+          dispatch(setIsLoading(false))
+        }
+      },
+    }),
+
+    //! UPDATE PASSWORD WITH TOKEN
+    fetchUpdatePassword: builder.mutation({
+      query: (data: any) => ({
+        url: `/user/resetPassword/${data.token}`,
+        method: 'PATCH',
+        body: {
+          password: data.NewPassword,
+          confirmPassword: data.ConfirmPassword,
+        },
+      }),
+      invalidatesTags: ['user'],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        try {
+          dispatch(setIsLoading(true))
+          const { data } = await queryFulfilled
+
+          toast({
+            title: 'Success',
+            description: data.message,
+          })
+          dispatch(setIsLoading(false))
+        } catch (error: any) {
+          toast({
+            description: error.error?.data?.message,
+            title: 'Error',
+            variant: 'destructive',
+          })
+          dispatch(setIsLoading(false))
+        }
+      },
+    }),
+
     //! DELETE USER
     fetchDeleteUser: builder.mutation({
       query: ({ id, accessToken }: { id: string; accessToken?: string }) => ({
@@ -265,4 +331,6 @@ export const {
   useFetchAllUsersQuery,
   useFetchSignInGoogleMutation,
   useFetchDeleteUserMutation,
+  useFetchSendTokenPasswordMutation,
+  useFetchUpdatePasswordMutation,
 } = dataSlice

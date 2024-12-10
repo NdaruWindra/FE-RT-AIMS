@@ -30,6 +30,12 @@ const router = createBrowserRouter([
       Component: (await import('./pages/auth/forgot-password')).default,
     }),
   },
+  {
+    path: '/forgot-password/:token',
+    lazy: async () => ({
+      Component: (await import('./pages/auth/change-password')).default,
+    }),
+  },
 
   // Main routes
   {
