@@ -1,0 +1,8 @@
+export { default as imageIL } from './logo-il.png'
+export { default as imagebanner } from './banner.png'
+export { default as imagetextIL } from './logo-text-il.png'
+export { default as wave } from './wave.png'
+export { default as wave2 } from './wave-2.png'
+export { default as microphone } from './Microphone.png'
+export { default as file } from './File.png'
+export { default as clock } from './Clock.png'
