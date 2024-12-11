@@ -293,6 +293,42 @@ export const dataSlice = createApi({
       },
     }),
 
+    //! UPDATE MY PASSWORD
+    fetchUpdateMyPassword: builder.mutation({
+      query: (data: any) => ({
+        url: `/user/updateMyPassword`,
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${data.accessToken}`,
+        },
+        body: {
+          oldPassword: data.oldPassword,
+          newPassword: data.newPassword,
+          confirmPassword: data.confirmPassword,
+        },
+      }),
+      invalidatesTags: ['user'],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        try {
+          dispatch(setIsLoading(true))
+          const { data } = await queryFulfilled
+
+          toast({
+            title: 'Success',
+            description: data.message,
+          })
+          dispatch(setIsLoading(false))
+        } catch (error: any) {
+          toast({
+            description: error.error?.data?.message,
+            title: 'Error',
+            variant: 'destructive',
+          })
+          dispatch(setIsLoading(false))
+        }
+      },
+    }),
+
     //! DELETE USER
     fetchDeleteUser: builder.mutation({
       query: ({ id, accessToken }: { id: string; accessToken?: string }) => ({
@@ -305,17 +341,21 @@ export const dataSlice = createApi({
       invalidatesTags: ['user'],
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         try {
+          dispatch(setIsLoading(true))
           const { data } = await queryFulfilled
           toast({
             title: 'Success',
             description: data.message,
           })
+
+          dispatch(setIsLoading(false))
         } catch (error: any) {
           toast({
             title: 'Error',
             description: error.error?.data?.message,
             variant: 'destructive',
           })
+          dispatch(setIsLoading(false))
         }
       },
     }),
@@ -333,4 +373,5 @@ export const {
   useFetchDeleteUserMutation,
   useFetchSendTokenPasswordMutation,
   useFetchUpdatePasswordMutation,
+  useFetchUpdateMyPasswordMutation,
 } = dataSlice

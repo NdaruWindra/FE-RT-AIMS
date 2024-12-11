@@ -20,6 +20,7 @@ import { useState } from 'react'
 import { useAppSelector } from '@/hooks/use-redux'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import FormPasswordSetting from './components/form-password-setting'
 
 const FormSchema = z.object({
   username: z.string().min(2, {
@@ -33,7 +34,9 @@ const FormSchema = z.object({
 
 export default function Settings() {
   const { username, email, accessToken, refreshToken, isLoading } =
-    useAppSelector((store) => store.user)
+    useAppSelector(function (store) {
+      return store.user
+    })
   const [fetchUpdateUser] = useFetchUpdateUserMutation()
   const [fetchRefreshToken] = useFetchRefreshTokenMutation()
 
@@ -76,7 +79,7 @@ export default function Settings() {
         </section>
 
         <div className='flex items-center justify-between'>
-          <h1>Become New </h1>
+          <h1>Edit Profile Settings </h1>
 
           <div>
             {!isEditing ? (
@@ -118,6 +121,7 @@ export default function Settings() {
                 <Input
                   type='file'
                   className='absolute inset-0 h-full w-full cursor-pointer opacity-0'
+                  disabled={!isEditing}
                 />
               </label>
             </Button>
@@ -190,62 +194,10 @@ export default function Settings() {
           </section>
 
           {/* Form Password*/}
-          <section className='lg:w-1/2'>
-            <h1
-              className='mb-4 text-lg font-semibold
-            '
-            >
-              Change Password
-            </h1>
-
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className='grid w-full grid-cols-1 items-center gap-4'
-              >
-                <FormField
-                  control={form.control}
-                  disabled={!isEditing}
-                  name='username'
-                  defaultValue={username}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Username</FormLabel>
-                      <FormControl>
-                        <Input placeholder={username} {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  disabled={!isEditing}
-                  defaultValue={email}
-                  name='email'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input placeholder={email} {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </form>
-            </Form>
-
-            <div className='mt-5 space-x-2'>
-              <Button
-                disabled={!isEditing}
-                type='submit'
-                onClick={onSubmit}
-                className='w-fit bg-green-500 text-white hover:bg-green-600'
-              >
-                Save Password
-              </Button>
-            </div>
-          </section>
+          <FormPasswordSetting
+            isEditing={isEditing}
+            setIsEditing={setIsEditing}
+          />
         </div>
       </Layout.Body>
     </Layout>

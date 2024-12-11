@@ -1,14 +1,7 @@
 import { Layout } from '@/components/custom/layout'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 import { Tabs, TabsContent } from '@/components/ui/tabs'
-import { RecentSales } from './components/recent-sales'
 import { Overview } from './components/overview'
 
 export default function Dashboard() {
@@ -24,29 +17,26 @@ export default function Dashboard() {
           defaultValue='overview'
           className='space-y-4'
         >
-          <TabsContent value='overview' className='space-y-4'>
-            <div className='grid grid-cols-1 gap-4 lg:grid-cols-7'>
+          {/* <TabsContent value='overview' className='space-y-4'>
+            <div className='grid grid-cols-1 gap-4 lg:grid-cols-8'>
               <Card className='col-span-1 lg:col-span-4'>
                 <CardHeader>
-                  <CardTitle>Overview</CardTitle>
+                  <CardTitle>Total History</CardTitle>
                 </CardHeader>
                 <CardContent className='pl-2'>
                   <Overview />
                 </CardContent>
               </Card>
-              <Card className='col-span-1 lg:col-span-3'>
+              <Card className='col-span-1 lg:col-span-4'>
                 <CardHeader>
-                  <CardTitle>Recent Sales</CardTitle>
-                  <CardDescription>
-                    You made 265 sales this month.
-                  </CardDescription>
+                  <CardTitle>Users</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <RecentSales />
+                <CardContent className='pl-2'>
+                  <Overview />
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
+          </TabsContent> */}
         </Tabs>
       </Layout.Body>
     </div>
