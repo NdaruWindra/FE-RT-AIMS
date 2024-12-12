@@ -13,6 +13,8 @@ const initialState: IUserState = {
   email: '',
   role: '',
   accessToken: '',
+  imageProfile: '',
+
   refreshToken: getLocalStorage('refreshToken'),
   message: {
     status: '',
@@ -46,6 +48,7 @@ export const userSlice = createSlice({
       state.email = payload.data.email
       state.username = payload.data.username
       state.role = payload.data.role
+      state.imageProfile = payload.data.imageProfile
 
       state.isAuthenticated = true
       state.isLoading = false
@@ -71,7 +74,7 @@ export const userSlice = createSlice({
     },
     removeUser: function (state, { payload }) {
       // Menghapus user dari state.allUser berdasarkan id
-      state.allUser = state.allUser.filter(user => user.id !== payload);
+      state.allUser = state.allUser.filter((user) => user.id !== payload)
     },
   },
 })

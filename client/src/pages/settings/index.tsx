@@ -10,11 +10,10 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
   useFetchRefreshTokenMutation,
-  useFetchUpdateUserMutation,
+  useFetchUpdateMyProfileMutation,
 } from '@/features/user/userThunk'
 
 import { useForm } from 'react-hook-form'
-import { IoPersonCircle } from 'react-icons/io5'
 
 import { useState } from 'react'
 import { useAppSelector } from '@/hooks/use-redux'
@@ -33,14 +32,22 @@ const FormSchema = z.object({
 })
 
 export default function Settings() {
-  const { username, email, accessToken, refreshToken, isLoading } =
-    useAppSelector(function (store) {
-      return store.user
-    })
-  const [fetchUpdateUser] = useFetchUpdateUserMutation()
+  const {
+    username,
+    email,
+    accessToken,
+    refreshToken,
+    isLoading,
+    imageProfile,
+  } = useAppSelector(function (store) {
+    return store.user
+  })
+  const [fetchUpdateMyProfile] = useFetchUpdateMyProfileMutation()
   const [fetchRefreshToken] = useFetchRefreshTokenMutation()
 
-  const [isEditing, setIsEditing] = useState(false)
+  const [isEditing, setIsEditing] = useState<boolean>(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [previewImage, setPreviewImage] = useState<string | null>(null)
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -50,13 +57,31 @@ export default function Settings() {
     },
   })
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const allowedTypes = ['image/jpeg', 'image/png']
+      if (!allowedTypes.includes(file.type)) {
+        alert('Only JPG and PNG formats are allowed.')
+        return
+      }
+      setSelectedFile(file)
+      setPreviewImage(URL.createObjectURL(file))
+    }
+  }
+
+  const handleRemovePicture = () => {
+    setSelectedFile(null)
+    setPreviewImage(null)
+  }
+
   const onSubmit = async () => {
     const formValue = form.getValues()
 
-    await fetchUpdateUser({
+    await fetchUpdateMyProfile({
       username: formValue.username,
       email: formValue.email,
-      targetEmail: email,
+      images: selectedFile,
       accessToken,
     })
 
@@ -106,7 +131,11 @@ export default function Settings() {
         {/* Profile */}
         <div className='items-center justify-between space-y-2 lg:flex lg:space-y-0'>
           <div className='flex items-center space-x-4'>
-            <IoPersonCircle className='h-16 w-16' />
+            <img
+              src={imageProfile || previewImage || ''}
+              alt='Profile Preview'
+              className='h-16 w-16 rounded-full object-cover'
+            />
             <div>
               <p className='font-medium dark:text-primary'>{username}</p>
               <p className='text-muted-foreground'>
@@ -119,19 +148,23 @@ export default function Settings() {
               <label className='flex h-full w-full items-center justify-center overflow-hidden rounded-lg bg-colorPrimary px-5 text-center text-primary hover:cursor-pointer'>
                 Choose File
                 <Input
+                  disabled={!isEditing || isLoading}
                   type='file'
-                  className='absolute inset-0 h-full w-full cursor-pointer opacity-0'
-                  disabled={!isEditing}
+                  accept='image/png, image/jpeg'
+                  className='absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:bg-background'
+                  onChange={handleFileChange}
                 />
               </label>
             </Button>
-
-            <Button
-              className='w-28 bg-primary text-red-500'
-              disabled={!isEditing}
-            >
-              Remove Picture
-            </Button>
+            {selectedFile && (
+              <Button
+                className='w-28 bg-primary text-red-500'
+                onClick={handleRemovePicture}
+                disabled={!isEditing || isLoading}
+              >
+                Remove Picture
+              </Button>
+            )}
           </div>
         </div>
 
@@ -183,12 +216,12 @@ export default function Settings() {
 
             <div className='mt-5 space-x-2'>
               <Button
-                disabled={!isEditing}
+                disabled={!isEditing || isLoading}
                 type='submit'
                 onClick={onSubmit}
                 className='w-28 bg-green-500 text-white hover:bg-green-600'
               >
-                Save
+                {isLoading ? 'Loading...' : 'Save'}
               </Button>
             </div>
           </section>

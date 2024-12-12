@@ -90,7 +90,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   // Google Login
   const handleLoginGoogle = useGoogleLogin({
     onSuccess: async (response: any) => {
-      // Menggunakan access_token Google
       const { access_token } = response
 
       const resultData = await fetchSignInGoogle(access_token)

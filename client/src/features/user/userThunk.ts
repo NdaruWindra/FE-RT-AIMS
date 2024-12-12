@@ -6,6 +6,7 @@ import {
   setProfile,
   setRemoveProfile,
 } from './userSlice'
+import { removeLocalStorage } from '@/utils/localStorage'
 
 export const dataSlice = createApi({
   reducerPath: 'users',
@@ -89,11 +90,13 @@ export const dataSlice = createApi({
           dispatch(setIsLoading(true))
           const { data } = await queryFulfilled
 
+          console.log(data)
+
           dispatch(setProfile(data))
           toast({ description: 'Login successful', title: 'Success' })
         } catch (error: any) {
           toast({
-            description: 'Error fetching Google user info',
+            description: error.error?.data?.message,
             title: 'Error',
             variant: 'destructive',
           })
@@ -121,11 +124,7 @@ export const dataSlice = createApi({
           dispatch(setProfile(data))
           dispatch(setIsLoading(false))
         } catch (error: any) {
-          toast({
-            description: error.error?.data?.message,
-            title: 'Error',
-            variant: 'destructive',
-          })
+          removeLocalStorage('refreshToken')
           dispatch(setIsLoading(false))
         }
       },
@@ -242,15 +241,12 @@ export const dataSlice = createApi({
           dispatch(setIsLoading(true))
           const { data } = await queryFulfilled
 
-          console.log(data)
-
           toast({
             title: 'Success',
             description: data.message,
           })
           dispatch(setIsLoading(false))
         } catch (error: any) {
-          console.log(error)
           toast({
             description: error.error?.data?.message,
             title: 'Error',
@@ -329,6 +325,51 @@ export const dataSlice = createApi({
       },
     }),
 
+    //! UPDATE MY PROFILE
+    fetchUpdateMyProfile: builder.mutation({
+      query: (data: any) => {
+        const formData = new FormData()
+        if (data.images) {
+          formData.append('photo', data.images)
+        }
+        if (data.username) {
+          formData.append('username', data.username)
+        }
+        if (data.email) {
+          formData.append('email', data.email)
+        }
+
+        return {
+          url: `/user/update-profile`,
+          method: 'PATCH',
+          body: formData,
+          headers: {
+            Authorization: `Bearer ${data.accessToken}`,
+          },
+        }
+      },
+      invalidatesTags: ['user'],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        try {
+          dispatch(setIsLoading(true))
+          const { data } = await queryFulfilled
+
+          toast({
+            title: 'Success',
+            description: data.message,
+          })
+          dispatch(setIsLoading(false))
+        } catch (error: any) {
+          toast({
+            description: error.error?.data?.message,
+            title: 'Error',
+            variant: 'destructive',
+          })
+          dispatch(setIsLoading(false))
+        }
+      },
+    }),
+
     //! DELETE USER
     fetchDeleteUser: builder.mutation({
       query: ({ id, accessToken }: { id: string; accessToken?: string }) => ({
@@ -374,4 +415,5 @@ export const {
   useFetchSendTokenPasswordMutation,
   useFetchUpdatePasswordMutation,
   useFetchUpdateMyPasswordMutation,
+  useFetchUpdateMyProfileMutation,
 } = dataSlice

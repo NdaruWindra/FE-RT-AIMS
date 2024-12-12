@@ -1,7 +1,7 @@
 import { IconType } from 'react-icons/lib'
 
 export type TSingleHistory = {
-  id_users:string
+  id_users: string
   id_history: string
   id: string
   title: string
@@ -41,6 +41,7 @@ export interface IUserState {
   role: string
   accessToken?: string
   refreshToken?: string
+  imageProfile: string
 
   message: TMessage
 

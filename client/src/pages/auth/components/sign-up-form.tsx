@@ -19,8 +19,11 @@ import { cn } from '@/lib/utils'
 import { useAppSelector } from '@/hooks/use-redux'
 import {
   useFetchRefreshTokenMutation,
+  useFetchSignInGoogleMutation,
   useFetchSignUpMutation,
 } from '@/features/user/userThunk'
+import { useGoogleLogin } from '@react-oauth/google'
+import { toast } from '@/components/ui/use-toast'
 
 interface SignUpFormProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -48,6 +51,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
   )
   const [fetchRefreshToken] = useFetchRefreshTokenMutation()
   const [fetchSignUp] = useFetchSignUpMutation()
+  const [fetchSignInGoogle] = useFetchSignInGoogleMutation()
 
   const navigate = useNavigate()
 
@@ -78,6 +82,25 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
 
     if (result.status === 'success') return navigate('/sign-in')
   }
+
+  const handleRegisterGoogle = useGoogleLogin({
+    onSuccess: async (response: any) => {
+      const { access_token } = response
+
+      const resultData = await fetchSignInGoogle(access_token)
+
+      if (resultData) {
+        return navigate('/dashboard')
+      }
+    },
+    onError: () => {
+      toast({
+        description: 'Failed register with google',
+        title: 'Error',
+        variant: 'destructive',
+      })
+    },
+  })
 
   // ! INITIAL RENDER
   useEffect(function () {
@@ -169,31 +192,27 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
                 </span>
               </div>
             </div>
-
-            <div className='flex items-center gap-2'>
-              {/* Google */}
-              <Button
-                disabled={isLoading}
-                className='w-full border hover:border-transparent hover:bg-colorPrimary hover:text-white'
-                leftSection={<FcGoogle className='h-4 w-4' />}
-              >
-                Google
-              </Button>
-            </div>
-
-            {/* to Login */}
-            <div className='flex justify-center space-x-2'>
-              <p className='text-muted-foreground'>Already have an account?</p>
-              <Link
-                to={'/sign-in'}
-                className='font-medium text-background underline'
-              >
-                Login
-              </Link>
-            </div>
           </div>
         </form>
       </Form>
+
+      {/* Google */}
+      <Button
+        disabled={isLoading}
+        className='w-full border hover:border-transparent hover:bg-colorPrimary hover:text-white'
+        leftSection={<FcGoogle className='h-4 w-4' />}
+        onClick={handleRegisterGoogle}
+      >
+        Google
+      </Button>
+
+      {/* to Login */}
+      <div className='flex justify-center space-x-2'>
+        <p className='text-muted-foreground'>Already have an account?</p>
+        <Link to={'/sign-in'} className='font-medium text-background underline'>
+          Login
+        </Link>
+      </div>
     </div>
   )
 }
