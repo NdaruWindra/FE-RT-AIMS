@@ -45,7 +45,7 @@ function Index() {
       <h1>Record your meeting, get instant transcribe and summary by AI</h1>
 
       {/* Header */}
-      <section className='space-y-5 lg:w-1/2'>
+      {/* <section className='space-y-5 lg:w-1/2'>
         <div className='flex space-x-4'>
           <span className={`fi fi-${selectedLanguage} text-2xl`} />
           <select
@@ -58,7 +58,7 @@ function Index() {
             <option value='other'>Other Languages Soon</option>
           </select>
         </div>
-      </section>
+      </section> */}
 
       {/* Record Audio */}
       <section>

@@ -75,105 +75,178 @@ export default function Settings() {
           </p>
         </section>
 
-        <h1>Become New </h1>
-        {/* Profile */}
-        <section>
-          <div className='items-center justify-between space-y-2 lg:flex lg:space-y-0'>
-            <div className='flex items-center space-x-4'>
-              <IoPersonCircle className='h-16 w-16' />
-              <div>
-                <p className='font-medium dark:text-primary'>{username}</p>
-                <p className='text-muted-foreground'>
-                  {email || 'user@gmail.com'}
-                </p>
-              </div>
-            </div>
-            <div className='space-x-2'>
-              <Button
-                className='w-28 bg-colorPrimary text-primary hover:text-textPrimary'
-                disabled={!isEditing}
-              >
-                Change Picture
-              </Button>
-              <Button
-                className='w-28 bg-primary text-red-500'
-                disabled={!isEditing}
-              >
-                Remove Picture
-              </Button>
-            </div>
-          </div>
-        </section>
+        <div className='flex items-center justify-between'>
+          <h1>Become New </h1>
 
-        {/* Form */}
-        <section>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className='grid w-full grid-cols-2 items-center gap-4'
-            >
-              <FormField
-                control={form.control}
-                disabled={!isEditing}
-                name='username'
-                defaultValue={username}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input placeholder={username} {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                disabled={!isEditing}
-                defaultValue={email}
-                name='email'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder={email} {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </form>
-          </Form>
-
-          <div className='mt-5 space-x-2'>
+          <div>
             {!isEditing ? (
               <Button
                 type='button'
                 onClick={() => setIsEditing(true)}
+                disabled={isLoading}
                 className='w-28 bg-colorPrimary text-primary hover:text-textPrimary'
               >
-                Edit
+                {isLoading ? 'Loading...' : 'Edit'}
               </Button>
             ) : (
-              <>
-                <Button
-                  disabled={isLoading}
-                  type='submit'
-                  onClick={onSubmit}
-                  className='w-28 bg-green-500 text-white hover:bg-green-600'
-                >
-                  Save
-                </Button>
-                <Button
-                  disabled={isLoading}
-                  onClick={() => setIsEditing(false)}
-                  className='w-28 bg-gray-500 text-white hover:bg-gray-600'
-                >
-                  Cancel
-                </Button>
-              </>
+              <Button
+                disabled={!isEditing}
+                onClick={() => setIsEditing(false)}
+                className='w-28 bg-gray-500 text-white hover:bg-gray-600'
+              >
+                Cancel
+              </Button>
             )}
           </div>
-        </section>
+        </div>
+
+        {/* Profile */}
+        <div className='items-center justify-between space-y-2 lg:flex lg:space-y-0'>
+          <div className='flex items-center space-x-4'>
+            <IoPersonCircle className='h-16 w-16' />
+            <div>
+              <p className='font-medium dark:text-primary'>{username}</p>
+              <p className='text-muted-foreground'>
+                {email || 'user@gmail.com'}
+              </p>
+            </div>
+          </div>
+          <div className='space-x-2'>
+            <Button className='relative inline-block bg-colorPrimary p-0 hover:cursor-pointer'>
+              <label className='flex h-full w-full items-center justify-center overflow-hidden rounded-lg bg-colorPrimary px-5 text-center text-primary hover:cursor-pointer'>
+                Choose File
+                <Input
+                  type='file'
+                  className='absolute inset-0 h-full w-full cursor-pointer opacity-0'
+                />
+              </label>
+            </Button>
+
+            <Button
+              className='w-28 bg-primary text-red-500'
+              disabled={!isEditing}
+            >
+              Remove Picture
+            </Button>
+          </div>
+        </div>
+
+        <div className='flex w-full flex-col justify-between gap-5 lg:flex-row'>
+          {/* Form Username And Email*/}
+          <section className='lg:w-1/2'>
+            <h1
+              className='mb-4 text-lg font-semibold
+            '
+            >
+              Change Profile
+            </h1>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className='grid w-full grid-cols-1 items-center gap-4'
+              >
+                <FormField
+                  control={form.control}
+                  disabled={!isEditing}
+                  name='username'
+                  defaultValue={username}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl>
+                        <Input placeholder={username} {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  disabled={!isEditing}
+                  defaultValue={email}
+                  name='email'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder={email} {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </form>
+            </Form>
+
+            <div className='mt-5 space-x-2'>
+              <Button
+                disabled={!isEditing}
+                type='submit'
+                onClick={onSubmit}
+                className='w-28 bg-green-500 text-white hover:bg-green-600'
+              >
+                Save
+              </Button>
+            </div>
+          </section>
+
+          {/* Form Password*/}
+          <section className='lg:w-1/2'>
+            <h1
+              className='mb-4 text-lg font-semibold
+            '
+            >
+              Change Password
+            </h1>
+
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className='grid w-full grid-cols-1 items-center gap-4'
+              >
+                <FormField
+                  control={form.control}
+                  disabled={!isEditing}
+                  name='username'
+                  defaultValue={username}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl>
+                        <Input placeholder={username} {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  disabled={!isEditing}
+                  defaultValue={email}
+                  name='email'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder={email} {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </form>
+            </Form>
+
+            <div className='mt-5 space-x-2'>
+              <Button
+                disabled={!isEditing}
+                type='submit'
+                onClick={onSubmit}
+                className='w-fit bg-green-500 text-white hover:bg-green-600'
+              >
+                Save Password
+              </Button>
+            </div>
+          </section>
+        </div>
       </Layout.Body>
     </Layout>
   )
