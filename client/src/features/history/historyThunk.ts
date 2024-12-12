@@ -111,21 +111,22 @@ export const historySlice = createApi({
     }),
 
     getAllHistory: builder.query({
-      query: ({ data, token }) => ({
-        url: `/history/all/${data.user_id}`,
+      query: (data:any) => ({
+        url: `/history/all/${data.id}`,
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${data.accessToken}`,
         },
       }),
       providesTags: ['histories'],
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         try {
           const { data } = await queryFulfilled;
+          console.log(data);
+          
+
           if (data && data.id) {
             dispatch(setHistory(data));
-          } else {
-            console.error('Data tidak memiliki properti id yang diharapkan.');
           }
         } catch (error) {
           toast({

@@ -3,7 +3,6 @@ import { useGetSingleHistoryQuery } from '@/features/history/historyThunk'
 import { useAppSelector } from '@/hooks/use-redux'
 import { IoMdArrowRoundBack } from 'react-icons/io'
 import { Link, useParams } from 'react-router-dom'
-
 import {
   Table,
   TableBody,

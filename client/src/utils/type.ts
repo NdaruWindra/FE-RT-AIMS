@@ -31,9 +31,12 @@ export type TMessage = {
 
 export interface IUserState {
   allUser: TSingleUser[]
+  displayedUsers: TSingleUser[] // Ditambahkan agar konsisten dengan state
+  filterBy: 'A-Z' | 'Z-A' | 'NEWEST' | 'LATEST' // Untuk fitur filtering
   paginationUser: {
     currentPage: number
     totalPage: number
+    pageSize: number
   }
   id: string
   username: string
@@ -48,6 +51,7 @@ export interface IUserState {
   isAuthenticated: boolean
   isLoading: boolean
 }
+
 
 export interface IHistoryState {
   singleHistory: TSingleHistory

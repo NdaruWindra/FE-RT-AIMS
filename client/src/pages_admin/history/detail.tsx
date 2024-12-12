@@ -1,6 +1,6 @@
-import { useNavigate, useSearchParams  } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import { Search } from '@/components/search'
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Search } from '@/components/search';
 import {
   Select,
   SelectGroup,
@@ -8,42 +8,50 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
-} from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
-import { TableHistory } from './components/table-detail'
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { TableHistory } from './components/table-detail';
+import { IoMdArrowRoundBack } from 'react-icons/io'
+import { Button } from '@/components/custom/button'
 
-import { useAppSelector } from '@/hooks/use-redux'
-import { PaginationHistory } from './components/pagination-history'
-import { useGetAllHistoryQuery } from '@/features/history/historyThunk'
-
-
+import { useAppSelector } from '@/hooks/use-redux';
+import { PaginationHistory } from './components/pagination-history';
+import { useGetAllHistoryQuery } from '@/features/history/historyThunk';
 
 export default function ProductTable() {
   const [searchParams] = useSearchParams();
-  const id = searchParams.get('user_id');
-  // const { data: historyData } = useGetAllHistoryQuery(user_id);
+  const id = searchParams.get('userid');
+  const [sortOrder, setSortOrder] = useState('');
+  const navigate = useNavigate();
+  const { accessToken } = useAppSelector((state) => state.user);
 
-  const [sortOrder, setSortOrder] = useState('')
-  const navigate = useNavigate()
-  const user = useAppSelector((state) => state.user)
-  const history = useAppSelector((state) => state.history)
-
-  const data = useGetAllHistoryQuery(id)
-  
-  
+  const { data, isLoading, isError, error } = useGetAllHistoryQuery({ id, accessToken });
 
   const handleSortChange = (value: string) => {
-    setSortOrder(value)
+    setSortOrder(value);
+  };
+
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
-  const handleBackClick = () => {
-    navigate('/dashboard-admin/history-admin')
+  if (isError || !data || !Array.isArray(data.data)) {
+    console.error('Error:', error);
+    return <div>Error loading history data.</div>;
   }
 
   return (
     <div className='relative w-full shadow-md sm:rounded-lg'>
+      
       <h1 className='text-2xl font-bold'>My History</h1>
-
+      <Button asChild variant={'outline'} className='mt-5 bg-colorPrimary'>
+            <Link to='/dashboard-admin/history-admin'>
+              <IoMdArrowRoundBack />
+              Back
+            </Link>
+          </Button>
+      
       <Separator className='my-4' />
 
       <div className='flex items-center justify-between'>
@@ -62,20 +70,17 @@ export default function ProductTable() {
             </SelectContent>
           </Select>
 
-          <button
-            onClick={handleBackClick}
-            className='bg-darkPrimary dark:bg-darkPrimary rounded-lg border border-primary px-4 py-2 text-primary transition-colors hover:text-primary dark:text-primary dark:hover:bg-primary hover:dark:bg-colorPrimary dark:hover:text-white'
-          >
-            Kembali
-          </button>
+          
+
+          
         </div>
 
-        <Search />
+
       </div>
 
-      <TableHistory data={history.allHistory} sortOrder={sortOrder} />
+      <TableHistory data={data.data} sortOrder={sortOrder} />
 
-      <PaginationHistory data={history.allHistory} />
+
     </div>
-  )
+  );
 }

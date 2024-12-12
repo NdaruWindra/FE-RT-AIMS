@@ -11,6 +11,7 @@ import {
 import { useDeleteHistoryMutation } from '@/features/history/historyThunk';
 import { TSingleHistory } from '@/utils/type';
 import { useAppSelector } from '@/hooks/use-redux';
+import { useNavigate } from 'react-router-dom';
 
 interface TableHistoryProps {
   data: TSingleHistory[];
@@ -20,9 +21,11 @@ interface TableHistoryProps {
 export function TableHistory({ data, sortOrder }: TableHistoryProps) {
   const { accessToken } = useAppSelector((store) => store.user);
   const [deleteHistory] = useDeleteHistoryMutation();
+  const navigate = useNavigate();
 
   const handleDelete = async (id: string) => {
     await deleteHistory({ accessToken, history_id: id });
+    navigate(`/dashboard-admin`);
   };
 
   // Fungsi untuk mengurutkan data
@@ -63,16 +66,16 @@ export function TableHistory({ data, sortOrder }: TableHistoryProps) {
         </TableHeader>
         <TableBody>
           {sortedData.map((history) => (
-            <TableRow key={history.id} className='h-14 hover:cursor-pointer'>
+            <TableRow key={history.id_history} className='h-14 hover:cursor-pointer'>
               <TableCell className='px-4 py-2'>
                 <Checkbox />
               </TableCell>
               <TableCell className='px-4 py-2 font-medium'>{history.title}</TableCell>
               <TableCell className='px-4 py-2 text-center'>00:20</TableCell>
-              <TableCell className='px-4 py-2'>{history.date}</TableCell>
+              <TableCell className='px-4 py-2'>{history.createdAt}</TableCell>
               <TableCell className='space-x-2 px-4 py-2 text-right'>
                 <Button
-                  onClick={() => handleDelete(history.id)}
+                  onClick={() => handleDelete(history.id_history)}
                   variant='ghost'
                   className='text-red-600 hover:bg-transparent hover:underline'
                 >
