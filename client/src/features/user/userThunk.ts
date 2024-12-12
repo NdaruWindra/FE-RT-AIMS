@@ -210,6 +210,7 @@ export const dataSlice = createApi({
         try {
           dispatch(setIsLoading(true))
           const { data } = await queryFulfilled
+          
 
           toast({
             title: 'Success',
@@ -217,6 +218,9 @@ export const dataSlice = createApi({
           })
           dispatch(setIsLoading(false))
         } catch (error: any) {
+
+          console.log(error);
+          
           toast({
             description: error.error?.data?.message,
             title: 'Error',

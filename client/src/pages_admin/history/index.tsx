@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Search } from '@/components/search'
+import { Search } from '@/components/search-admin'
 import {
   Select,
   SelectGroup,
@@ -12,7 +12,7 @@ import { Separator } from '@/components/ui/separator'
 import { TableHistory } from './components/table'
 
 import { useAppSelector } from '@/hooks/use-redux'
-import { PaginationHistory } from './components/pagination-history'
+import { PaginationUser } from './components/pagination-users'
 import { Edit } from './components/edit'
 import { useFetchAllUsersQuery, useFetchDeleteUserMutation } from '@/features/user/userThunk'
 
@@ -94,7 +94,7 @@ export default function ProductTable() {
         />
       )}
 
-      <PaginationHistory
+      <PaginationUser
         data={data?.data}
       />
     </div>

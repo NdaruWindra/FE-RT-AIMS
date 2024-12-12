@@ -8,6 +8,7 @@ import {
 
 const initialState: IUserState = {
   allUser: [],
+  displayedUsers: [],
   id: '',
   username: '',
   email: '',
@@ -22,13 +23,13 @@ const initialState: IUserState = {
   paginationUser: {
     currentPage: 1,
     totalPage: 10,
+    pageSize: 10,
   },
 
+  filterBy: 'A-Z',
   isAuthenticated: false,
   isLoading: false,
 }
-
-// BASE FETCH
 
 export const userSlice = createSlice({
   name: 'user',
@@ -55,7 +56,11 @@ export const userSlice = createSlice({
     },
     setAllUsers: function (state, { payload }) {
       state.allUser = payload.data
-      state.paginationUser.totalPage = payload.result
+      state.paginationUser.totalPage = Math.ceil(payload.data.length / state.paginationUser.pageSize)
+      state.paginationUser.currentPage = 1
+      const startIndex = 0
+      const endIndex = state.paginationUser.pageSize
+      state.displayedUsers = state.allUser.slice(startIndex, endIndex)
     },
     setRemoveProfile: function (state) {
       state.accessToken = ''
@@ -70,8 +75,54 @@ export const userSlice = createSlice({
       state.isLoading = false
     },
     removeUser: function (state, { payload }) {
-      // Menghapus user dari state.allUser berdasarkan id
-      state.allUser = state.allUser.filter(user => user.id !== payload);
+      state.allUser = state.allUser.filter(user => user.id !== payload)
+      state.paginationUser.totalPage = Math.ceil(state.allUser.length / state.paginationUser.pageSize)
+      const startIndex = (state.paginationUser.currentPage - 1) * state.paginationUser.pageSize
+      const endIndex = startIndex + state.paginationUser.pageSize
+      state.displayedUsers = state.allUser.slice(startIndex, endIndex)
+    },
+    setCurrentPage: (state, { payload }) => {
+      state.paginationUser.currentPage = payload
+
+      const startIndex = (payload - 1) * state.paginationUser.pageSize
+      const endIndex = startIndex + state.paginationUser.pageSize
+
+      state.displayedUsers = state.allUser.slice(startIndex, endIndex)
+    },
+    setSearch: (state, { payload }) => {
+      const userSearch = state.allUser.filter(user =>
+        user.username?.toLowerCase().includes(payload.toLowerCase())
+      )
+
+      state.paginationUser.totalPage = Math.ceil(userSearch.length / state.paginationUser.pageSize)
+
+      const startIndex = (state.paginationUser.currentPage - 1) * state.paginationUser.pageSize
+      const endIndex = startIndex + state.paginationUser.pageSize
+
+      state.displayedUsers = userSearch.slice(startIndex, endIndex)
+    },
+    setFilter: (state, { payload }) => {
+      state.filterBy = payload
+
+      const users = [...state.allUser]
+
+      switch (payload) {
+        case 'A-Z':
+          users.sort((a, b) => a.username.localeCompare(b.username))
+          break
+
+        case 'Z-A':
+          users.sort((a, b) => b.username.localeCompare(a.username))
+          break
+
+        default:
+          break
+      }
+
+      const startIndex = (state.paginationUser.currentPage - 1) * state.paginationUser.pageSize
+      const endIndex = startIndex + state.paginationUser.pageSize
+
+      state.displayedUsers = users.slice(startIndex, endIndex)
     },
   },
 })
@@ -83,6 +134,9 @@ export const {
   setAllUsers,
   setRemoveProfile,
   removeUser,
+  setCurrentPage,
+  setSearch,
+  setFilter,
 } = userSlice.actions
 
 export default userSlice.reducer

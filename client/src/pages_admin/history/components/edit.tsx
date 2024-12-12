@@ -20,17 +20,19 @@ export function Edit({ onClose, initialData }: EditProps) {
     defaultValues: {
       username: initialData.username,
       newEmail: '',
+      
     },
   })
 
   const handleSaveChanges = async (data: any) => {
+    console.log(initialData);
+    
+
     await fetchUpdateUser({
       accessToken: user.accessToken,
-      data: {
-        username: data.username,
-        email: data.email,
-        targetEmail: data.targetEmail,
-      },
+      username: data.username || initialData.username,
+      email: data.newEmail || initialData.email,
+      targetEmail: initialData.email,
     })
 
     onClose()
