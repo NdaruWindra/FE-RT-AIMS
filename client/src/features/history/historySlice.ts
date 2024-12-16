@@ -62,7 +62,8 @@ export const historySlice = createSlice({
       state.allHistory = payload.data
       state.paginationHistory.totalPage = Math.ceil(payload.data.length / 10)
       state.showedHistory = payload.data.slice(
-        (state.paginationHistory.currentPage - 1) * state.paginationHistory.pageSize,
+        (state.paginationHistory.currentPage - 1) *
+          state.paginationHistory.pageSize,
         state.paginationHistory.pageSize
       )
     },
@@ -74,7 +75,8 @@ export const historySlice = createSlice({
       state.singleHistory.createdAt = payload.createdAt
       state.singleHistory.result.id_result = payload.result.id_result
       state.singleHistory.result.summary = payload.result.summary
-      state.singleHistory.result.transcript = payload.result.transcript.split('-')
+      state.singleHistory.result.transcript =
+        payload.result.transcript.split('-')
     },
     setSearch: (state, { payload }) => {
       const histories = JSON.parse(JSON.stringify(state))
@@ -86,7 +88,8 @@ export const historySlice = createSlice({
       state.paginationHistory.totalPage = Math.ceil(historySearch.length / 10)
 
       state.showedHistory = historySearch.slice(
-        (state.paginationHistory.currentPage - 1) * state.paginationHistory.pageSize,
+        (state.paginationHistory.currentPage - 1) *
+          state.paginationHistory.pageSize,
         state.paginationHistory.pageSize
       )
     },
@@ -109,13 +112,15 @@ export const historySlice = createSlice({
 
         case 'NEWEST':
           histories.sort(
-            (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           )
           break
 
         case 'LATEST':
           histories.sort(
-            (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+            (a, b) =>
+              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
           )
           break
 

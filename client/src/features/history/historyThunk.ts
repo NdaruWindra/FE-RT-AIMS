@@ -16,11 +16,11 @@ export const historySlice = createApi({
   endpoints: (builder) => ({
     //! GET MY HISTORY
     getHistory: builder.query({
-      query: (token: string | undefined) => ({
+      query: (data: any) => ({
         url: `/history/my-history`,
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${data.accessToken}`,
         },
       }),
       providesTags: ['histories'],
@@ -30,6 +30,34 @@ export const historySlice = createApi({
 
           const { data } = await queryFulfilled
           dispatch(setHistory(data))
+
+          dispatch(setIsLoading(false))
+        } catch (error) {
+          toast({
+            description: 'Error getting history',
+            title: 'Error',
+            variant: 'destructive',
+          })
+          dispatch(setIsLoading(false))
+        }
+      },
+    }),
+
+    //! GET MY HISTORY
+    getHistoryMonthly: builder.query({
+      query: (data: any) => ({
+        url: `/history/my-history?type=${data.query}`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${data.accessToken}`,
+        },
+      }),
+      providesTags: ['histories'],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        try {
+          dispatch(setIsLoading(true))
+
+          await queryFulfilled
 
           dispatch(setIsLoading(false))
         } catch (error) {
@@ -111,7 +139,7 @@ export const historySlice = createApi({
     }),
 
     getAllHistory: builder.query({
-      query: (data:any) => ({
+      query: (data: any) => ({
         url: `/history/all/${data.id}`,
         method: 'GET',
         headers: {
@@ -121,25 +149,20 @@ export const historySlice = createApi({
       providesTags: ['histories'],
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         try {
-          const { data } = await queryFulfilled;
-          console.log(data);
-          
+          const { data } = await queryFulfilled
 
           if (data && data.id) {
-            dispatch(setHistory(data));
+            dispatch(setHistory(data))
           }
         } catch (error) {
           toast({
             description: 'Error fetching all histories',
             title: 'Error',
             variant: 'destructive',
-          });
+          })
         }
       },
     }),
-    
-    
-
 
     //! DELETE (ADMIN)
     deleteHistory: builder.mutation({
@@ -239,6 +262,7 @@ export const {
   useDeleteHistoryMutation,
   useUpdateHistoryMutation,
   useGetHistoryQuery,
+  useGetHistoryMonthlyQuery,
   useGetSingleHistoryQuery,
   useGetAllHistoryQuery,
 } = historySlice

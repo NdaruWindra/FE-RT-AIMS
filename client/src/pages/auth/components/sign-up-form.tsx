@@ -201,7 +201,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
         disabled={isLoading}
         className='w-full border hover:border-transparent hover:bg-colorPrimary hover:text-white'
         leftSection={<FcGoogle className='h-4 w-4' />}
-        onClick={handleRegisterGoogle}
+        onClick={() => handleRegisterGoogle()}
       >
         Google
       </Button>

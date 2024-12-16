@@ -197,7 +197,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           className='w-full border hover:border-transparent hover:bg-colorPrimary hover:text-white'
           type='button'
           leftSection={<FcGoogle className='h-4 w-4' />}
-          onClick={handleLoginGoogle}
+          onClick={() => handleLoginGoogle()}
         >
           Google
         </Button>

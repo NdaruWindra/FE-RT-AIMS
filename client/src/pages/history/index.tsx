@@ -10,24 +10,25 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { TableHistory } from './components/table'
 
-import { useAppSelector } from '@/hooks/use-redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/use-redux'
 import { PaginationHistory } from './components/pagination-history'
 import { useGetHistoryQuery } from '@/features/history/historyThunk'
-import { useDispatch } from 'react-redux'
 import { setFilter } from '@/features/history/historySlice'
 
 export default function ProductTable() {
   const user = useAppSelector((state) => state.user)
 
-  const { data } = useGetHistoryQuery(user.accessToken)
-  const dispatch = useDispatch()
+  const { data } = useGetHistoryQuery({
+    accessToken: user.accessToken,
+  })
+  const dispatch = useAppDispatch()
 
   const handleOnChange = (value: string) => {
     dispatch(setFilter(value))
   }
 
   return (
-    <div className='relative mt-10 w-full shadow-md sm:rounded-lg'>
+    <div className='relative mt-5 w-full shadow-md sm:rounded-lg'>
       <h1 className='text-2xl font-bold'>My History</h1>
 
       <Separator className='my-4' />

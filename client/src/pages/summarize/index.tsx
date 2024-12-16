@@ -9,13 +9,13 @@ import { useAppSelector } from '@/hooks/use-redux'
 import { Separator } from '@/components/ui/separator'
 
 function Index() {
-  const [selectedLanguage, setSelectedLanguage] = useState('id')
+  // const [selectedLanguage, setSelectedLanguage] = useState('id')
   const [showUpload, setShowUpload] = useState(false)
   const history = useAppSelector((state) => state.history)
 
-  function handleLanguageChange(e: any) {
-    setSelectedLanguage(e.currentTarget.value)
-  }
+  // function handleLanguageChange(e: any) {
+  //   setSelectedLanguage(e.currentTarget.value)
+  // }
 
   function handleCloseUpload() {
     setShowUpload(false)
@@ -26,9 +26,9 @@ function Index() {
   }
 
   return (
-    <div className='container mt-5 space-y-5'>
+    <div className='mt-5 w-full space-y-5'>
       <section className='flex justify-between'>
-        <h1 className='text-2xl font-bold md:text-3xl'>Summarize Meeting AI</h1>
+        <h1 className='text-2xl  md:text-3xl'>Summarize Meeting AI</h1>
         <Button
           className=' bg-colorPrimary font-semibold text-white dark:hover:text-textPrimary md:flex'
           onClick={handleUploadClick}

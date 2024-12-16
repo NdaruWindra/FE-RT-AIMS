@@ -52,7 +52,6 @@ export interface IUserState {
   isLoading: boolean
 }
 
-
 export interface IHistoryState {
   singleHistory: TSingleHistory
   allHistory: TSingleHistory[]

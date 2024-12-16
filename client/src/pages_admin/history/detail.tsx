@@ -1,6 +1,5 @@
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { useState } from 'react';
-import { Search } from '@/components/search';
+import { useSearchParams, Link } from 'react-router-dom'
+import { useState } from 'react'
 import {
   Select,
   SelectGroup,
@@ -8,50 +7,45 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
-} from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
-import { TableHistory } from './components/table-detail';
+} from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
+import { TableHistory } from './components/table-detail'
 import { IoMdArrowRoundBack } from 'react-icons/io'
 import { Button } from '@/components/custom/button'
 
-import { useAppSelector } from '@/hooks/use-redux';
-import { PaginationHistory } from './components/pagination-history';
-import { useGetAllHistoryQuery } from '@/features/history/historyThunk';
+import { useAppSelector } from '@/hooks/use-redux'
+import { useGetAllHistoryQuery } from '@/features/history/historyThunk'
 
 export default function ProductTable() {
-  const [searchParams] = useSearchParams();
-  const id = searchParams.get('userid');
-  const [sortOrder, setSortOrder] = useState('');
-  const navigate = useNavigate();
-  const { accessToken } = useAppSelector((state) => state.user);
+  const [searchParams] = useSearchParams()
+  const id = searchParams.get('userid')
+  const [sortOrder, setSortOrder] = useState('')
 
-  const { data, isLoading, isError, error } = useGetAllHistoryQuery({ id, accessToken });
+  const { accessToken } = useAppSelector((state) => state.user)
+
+  const { data, isLoading } = useGetAllHistoryQuery({
+    id,
+    accessToken,
+  })
 
   const handleSortChange = (value: string) => {
-    setSortOrder(value);
-  };
-
-
-  if (isLoading) {
-    return <div>Loading...</div>;
+    setSortOrder(value)
   }
 
-  if (isError || !data || !Array.isArray(data.data)) {
-    console.error('Error:', error);
-    return <div>Error loading history data.</div>;
+  if (isLoading) {
+    return <div>Loading...</div>
   }
 
   return (
     <div className='relative w-full shadow-md sm:rounded-lg'>
-      
       <h1 className='text-2xl font-bold'>My History</h1>
       <Button asChild variant={'outline'} className='mt-5 bg-colorPrimary'>
-            <Link to='/dashboard-admin/history-admin'>
-              <IoMdArrowRoundBack />
-              Back
-            </Link>
-          </Button>
-      
+        <Link to='/dashboard-admin/history-admin'>
+          <IoMdArrowRoundBack />
+          Back
+        </Link>
+      </Button>
+
       <Separator className='my-4' />
 
       <div className='flex items-center justify-between'>
@@ -69,18 +63,16 @@ export default function ProductTable() {
               </SelectGroup>
             </SelectContent>
           </Select>
-
-          
-
-          
         </div>
-
-
       </div>
 
-      <TableHistory data={data.data} sortOrder={sortOrder} />
-
-
+      {!data ? (
+        <div className='mt-5'>
+          <h1>History is empty</h1>
+        </div>
+      ) : (
+        <TableHistory data={data.data} sortOrder={sortOrder} />
+      )}
     </div>
-  );
+  )
 }
